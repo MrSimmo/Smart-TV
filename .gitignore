@@ -15,3 +15,6 @@ dist
 .DS_Store
 .vscode
 *.log
+
+# playwright-cli session artefacts (per-run snapshots, screenshots, console logs)
+.playwright-cli/
