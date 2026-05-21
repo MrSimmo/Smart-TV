@@ -62,7 +62,7 @@ const defaultSettings = {
 	showClock: true,
 	clockDisplay: '24-hour',
 	autoLogin: true,
-	navbarPosition: 'top',
+	navbarPosition: 'left',
 	screensaverEnabled: true,
 	screensaverTimeout: 90,
 	screensaverDimmingLevel: 50,
