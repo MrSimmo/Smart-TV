@@ -1,0 +1,59 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.picker {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	padding: @s-2 0;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	height: 40px;
+	padding: 0 @s-3 0 @s-2;
+	background: var(--surface-2);
+	color: var(--text);
+	border: 0;
+	border-radius: 20px;
+	outline: none;
+	cursor: pointer;
+	font-size: @text-13;
+	margin-right: @s-2;
+	margin-bottom: @s-2;
+	transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.chip.active {
+	background: var(--pill-bg);
+	color: var(--accent-2);
+}
+
+.chip:focus {
+	background: var(--accent);
+	color: #FFFFFF;
+	transform: scale(1.04);
+	box-shadow: 0 0 18px rgba(124, 92, 252, 0.4);
+}
+
+.swatch {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--surface);
+	margin-right: @s-2;
+	border: 1px solid var(--line);
+}
+
+.swatchHash {
+	font-family: @font-display;
+	font-size: 14px;
+	color: var(--text-mute);
+}
+
+.label {
+	font-weight: 600;
+}

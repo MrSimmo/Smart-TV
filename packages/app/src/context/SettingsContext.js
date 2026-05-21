@@ -95,7 +95,9 @@ const defaultSettings = {
 	blockedRatings: [],
 	jellyseerrRows: null,
 	// ADR-002: Plex-UI fork toggle (additive only). Values: 'plex' | 'original'.
-	uiTheme: 'plex'
+	uiTheme: 'plex',
+	// ADR-005: Plex-UI accent preset. Values: 'moonfin-purple' | 'plex-gamboge' | 'jellyfin-indigo' | 'custom'.
+	uiThemePreset: 'moonfin-purple'
 };
 
 export {DEFAULT_HOME_ROWS};

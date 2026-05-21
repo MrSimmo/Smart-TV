@@ -15,6 +15,9 @@ import {isBackKey} from '../../utils/keys';
 import ClearDataDialog from '../../components/ClearDataDialog';
 import {clearAllStorage} from '../../services/storage';
 import {MATERIAL_ICON_URLS} from './materialIconMap';
+// ADR-002 / ADR-005: Plex-UI accent preset picker. Additive — does not
+// modify any existing setting rows.
+import AccentPicker from '../../components/plex-ui/AccentPicker';
 
 import css from './Settings.module.less';
 
@@ -275,6 +278,12 @@ const getClockDisplayOptions = () => [
 const getNavPositionOptions = () => [
 	{ value: 'top', label: $L('Top Bar') },
 	{ value: 'left', label: $L('Left Sidebar') }
+];
+
+// ADR-002: UI Theme toggle for the Plex-UI fork. Values: 'plex' | 'original'.
+const getUiThemeOptions = () => [
+	{ value: 'plex', label: $L('Plex') },
+	{ value: 'original', label: $L('Original') }
 ];
 
 const getWatchedIndicatorOptions = () => [
@@ -791,6 +800,21 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
+	// ADR-002 / ADR-005: Plex-UI fork Appearance section. Additive only — does
+	// not modify any other Personalization section.
+	const renderPersonalizationAppearance = () => (
+		<>
+			{renderOptionItem('uiTheme', $L('UI Theme'), getUiThemeOptions(), $L('Plex'), 'colorpicker')}
+			<div className={css.listItem}>
+				<div className={css.listItemBody}>
+					<div className={css.listItemHeading}>{$L('Accent')}</div>
+					<div className={css.listItemCaption}>{$L('Choose a built-in preset or use the focus colour above')}</div>
+					<AccentPicker />
+				</div>
+			</div>
+		</>
+	);
+
 	const renderDynamicVisualOverlays = () => (
 		<>
 			{renderOptionItem('seasonalTheme', $L('Seasonal Surprise'), getSeasonalThemeOptions(), $L('None'), 'newfeature')}
@@ -1049,7 +1073,9 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 					{ id: 'generalStyle', label: $L('General Style'), description: $L('Theme, blur, and visual style') },
 					{ id: 'navigation', label: $L('Navigation'), description: $L('Navbar layout and shortcut controls') },
 					{ id: 'homePage', label: $L('Home Page'), description: $L('Rows and home screen behavior') },
-					{ id: 'libraries', label: $L('Libraries'), description: $L('Library visibility and server grouping') }
+					{ id: 'libraries', label: $L('Libraries'), description: $L('Library visibility and server grouping') },
+					// ADR-002: Plex-UI fork — additive subcategory only.
+					{ id: 'appearance', label: $L('Appearance'), description: $L('UI theme and accent preset') }
 				];
 			case 'dynamicContent':
 				return [
@@ -1110,6 +1136,8 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 				return renderPersonalizationHomePage();
 			case 'personalization.libraries':
 				return renderPersonalizationLibraries();
+			case 'personalization.appearance':
+				return renderPersonalizationAppearance();
 			case 'dynamicContent.visualOverlays':
 				return renderDynamicVisualOverlays();
 			case 'dynamicContent.mediaBarLocalPreviews':

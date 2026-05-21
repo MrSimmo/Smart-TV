@@ -80,4 +80,4 @@ rg -n "will-change" packages/app/src/styles/plex-ui packages/app/src/components/
 
 I will deploy and run the full visual QA against the Samsung Q90R: toggle theme, switch each accent preset, walk every view with the remote, verify focus coverage, take comparison screenshots against the mockups.
 
-## Status: ⬜
+## Status: ✅

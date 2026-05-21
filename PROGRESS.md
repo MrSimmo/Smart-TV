@@ -117,3 +117,24 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **Verified:** `npm run lint` clean; `npm run build:tizen` and `npm run build:tizen:legacy` both clean. End-user verification on Q90R deferred.
 
 **Next:** TKT-06 — Polish, accent presets, QA.
+
+## 2026-05-21 — TKT-06 — Polish, accent presets, QA
+
+**Scope:** Phase 6 — final pass. Appearance section in Settings (UI theme + accent presets), `uiThemePreset` key, runtime accent swap, README, performance grep audit.
+
+**Tasks:**
+- [x] TKT-06 — Created `components/plex-ui/AccentPicker/*` (preset chips + `applyAccentPreset` helper + exported `ACCENT_PRESETS`). Added `uiThemePreset: 'moonfin-purple'` to `defaultSettings`. Added an additive Appearance subcategory under Personalization in `views/Settings/Settings.js` (one new subcat + one dispatch case + one renderer; nothing existing moved or renamed). Wired `App.js` to call `applyAccentPreset` whenever `settings.uiThemePreset` or `settings.focusColor` changes — named presets overwrite `focusColor` so the upstream UI follows when toggled back to `'original'`. Created `views/plex-ui/README.md` (screenshot strip, toggle instructions, preset list, file map, ADR cross-references).
+- [x] Performance grep audit:
+  - `transition: all` — zero matches in plex-ui code (only references in commentary/ADR notes).
+  - `backdrop-filter` — zero matches in plex-ui code (only commentary).
+  - `aspect-ratio` — zero matches in plex-ui code (only commentary).
+  - `will-change` — appears only inside `[data-near-focus="true"]` selectors in SidebarPlex and PosterCard, scoped per ADR-004.
+- [x] All previous tickets' `Status: ⬜` already updated to `Status: ✅` at the close of each phase commit (TKT-00..05).
+
+**Changes:** `components/plex-ui/AccentPicker/{AccentPicker.js,.module.less,index.js}` (new); `views/plex-ui/README.md` (new); `context/SettingsContext.js` (+2 lines — added `uiThemePreset` key, ADR-002 allow-list); `views/Settings/Settings.js` (+24 lines — additive Appearance subcategory + dispatch + renderer, ADR-002 allow-list); `App/App.js` (+12 lines — applyAccentPreset import + useEffect, ADR-002 allow-list).
+
+**Decisions:** Bound by ADR-005. Custom preset reuses existing `settings.focusColor` hex — no duplicate UI per the ADR. Settings additions are strictly insertions; no existing rows moved or renamed.
+
+**Verified:** `npm run lint` clean; `npm run build:tizen` and `npm run build:tizen:legacy` both clean; performance grep audit zero forbidden patterns in production CSS. End-user QA (focus coverage, accent preset switching across all three views) deferred to Q90R deploy by the human.
+
+**Next:** Tag `plex-ui-v0.1.0`, push tags, write the final rollout-complete summary, report commits + tag back to the human.

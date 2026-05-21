@@ -18,6 +18,8 @@ import UpdateNotification from '../components/UpdateNotification';
 import NavBar from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
 import SidebarPlex from '../components/plex-ui/SidebarPlex';
+// ADR-005: Plex-UI accent preset runtime application.
+import {ACCENT_PRESETS, applyAccentPreset} from '../components/plex-ui/AccentPicker';
 import AccountModal from '../components/AccountModal';
 import ExitDialog from '../components/ExitDialog';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -186,6 +188,15 @@ const AppContent = (props) => {
 	useEffect(() => {
 		document.documentElement.style.setProperty('--accent-color', settings.focusColor || '#00a4dc');
 	}, [settings.focusColor]);
+
+	// ADR-005: keep --accent / --accent-2 in sync with the chosen preset (and
+	// fall back to focusColor for the 'custom' preset). Driven by both keys so
+	// a focusColor edit while custom is selected re-applies.
+	useEffect(() => {
+		const presetId = settings.uiThemePreset || 'moonfin-purple';
+		const preset = ACCENT_PRESETS.find(p => p.id === presetId);
+		applyAccentPreset(preset, settings.focusColor);
+	}, [settings.uiThemePreset, settings.focusColor]);
 
 	useEffect(() => {
 		const scale = settings.uiScale || 1.0;
