@@ -1,9 +1,12 @@
 // FilterMenu — popover menu for LibraryPlex filter chips (v0.1.1 bug #5).
 //
 // Props:
-//   anchorEl     — DOM element of the chip that opened the menu. Used to
-//                  position the menu beneath the chip's bounding box and to
-//                  return Spotlight focus when the menu closes.
+//   anchorRect   — DOMRect-like {top, left, bottom, right, width, height}
+//                  describing the chip that opened the menu. Used to position
+//                  the menu beneath the chip without touching the DOM.
+//                  Callers compute the rect once via
+//                  `event.currentTarget.getBoundingClientRect()` so this
+//                  component stays pure-render.
 //   items        — array of {value, label}. `value === null` is allowed and
 //                  means "clear this filter".
 //   selectedValue — currently-applied filter value (or null).
@@ -12,9 +15,12 @@
 //                  d-pad LEFT, or Back).
 //
 // Spotlight is trapped inside the menu via SpotlightContainerDecorator with
-// restrict: 'self-only'. The menu obeys the legacy WebKit envelope (ADR-003)
-// — no backdrop-filter, no flex/grid `gap`, transitions limited to transform
-// and background/color.
+// restrict: 'self-only'. SpotlightContainerDecorator does not forward refs to
+// its DOM node, so positioning is done via inline style from `anchorRect`
+// rather than imperative ref.current.style mutation (v0.1.1 QA fix).
+//
+// The menu obeys the legacy WebKit envelope (ADR-003) — no backdrop-filter,
+// no flex/grid `gap`, transitions limited to transform and background/color.
 
 import {memo, useCallback, useEffect, useRef} from 'react';
 import Spottable from '@enact/spotlight/Spottable';
@@ -35,19 +41,9 @@ const itemKey = (it, i) => {
 	return String(it.value) + '_' + i;
 };
 
-const FilterMenu = ({anchorEl, items = [], selectedValue, onSelect, onClose}) => {
-	const ref = useRef(null);
+const FilterMenu = ({anchorRect, items = [], selectedValue, onSelect, onClose}) => {
 	const closeRef = useRef(onClose);
 	useEffect(() => { closeRef.current = onClose; }, [onClose]);
-
-	// Position beneath the anchor's bounding box. Re-runs on anchor change.
-	useEffect(() => {
-		if (!anchorEl || !ref.current) return;
-		const rect = anchorEl.getBoundingClientRect();
-		const el = ref.current;
-		el.style.top = (rect.bottom + 6) + 'px';
-		el.style.left = rect.left + 'px';
-	}, [anchorEl]);
 
 	// Move Spotlight into the menu when it opens — onto the currently-selected
 	// item if present, otherwise the first.
@@ -71,10 +67,14 @@ const FilterMenu = ({anchorEl, items = [], selectedValue, onSelect, onClose}) =>
 
 	const handleSelect = useCallback((value) => () => onSelect?.(value), [onSelect]);
 
+	const positionStyle = anchorRect
+		? {top: (anchorRect.bottom + 6) + 'px', left: anchorRect.left + 'px'}
+		: undefined;
+
 	return (
 		<MenuContainer
 			className={css.menu}
-			ref={ref}
+			style={positionStyle}
 			onKeyDown={handleKey}
 			spotlightId="filtermenu"
 		>

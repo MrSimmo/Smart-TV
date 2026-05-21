@@ -85,34 +85,43 @@ const LibraryPlex = ({
 	const [menuState, setMenuState] = useState(null);
 
 	useEffect(() => {
-		if (!api || !library) {
+		// v0.1.1 hotfix during QA: when a user picks a genre from the global
+		// Genres view, App.js may pass a synthetic library with Id === null (or
+		// no library at all). Either way, as long as we have a genre filter we
+		// should still fetch across the whole server. Skip only when nothing
+		// can constrain the query.
+		if (!api || (!library && !genreFilter)) {
 			setItems([]);
 			setLoading(false);
 			return;
 		}
 		let cancelled = false;
 		setLoading(true);
-		const includeItemTypes = itemTypeForLibrary(library);
+		const includeItemTypes = library ? itemTypeForLibrary(library) : 'Movie,Series';
 		api.getItems({
-			ParentId: library.Id,
+			// ParentId is dropped entirely when null/missing — the server treats
+			// the omission as "across the user's libraries", which is what the
+			// global-genre flow needs.
+			ParentId: library?.Id || undefined,
 			IncludeItemTypes: includeItemTypes || undefined,
 			Genres: genreFilter || undefined,
 			Recursive: true,
-			Fields: 'UserData,MediaSources,ProductionYear,Width',
+			// `Genres` must be in Fields so the FilterMenu can populate its
+			// distinct-genre list AND so any defensive client-side filter has
+			// data to check; v0.1.0 omitted it which caused the genre flow to
+			// drop every item (v0.1.1 QA bug).
+			Fields: 'UserData,MediaSources,ProductionYear,Width,Genres',
 			SortBy: sortKey,
 			SortOrder: 'Ascending',
 			Limit: 200,
 			ImageTypeLimit: 1
 		}).then(res => {
 			if (cancelled) return;
-			let result = res?.Items || [];
-			// Defence-in-depth: server-side Genres filter is the primary path;
-			// the client-side pass below also catches unified-mode results that
-			// may bypass the server param.
-			if (genreFilter) {
-				result = result.filter(it => Array.isArray(it.Genres) && it.Genres.includes(genreFilter));
-			}
-			setItems(result);
+			// The server-side Genres filter is authoritative — no client-side
+			// re-filter. The v0.1.0 defence-in-depth pass was speculative
+			// (unified-mode unknown) and turned into a footgun when items
+			// arrived without a Genres array.
+			setItems(res?.Items || []);
 			setLoading(false);
 		}).catch(() => {
 			if (!cancelled) {
@@ -164,22 +173,31 @@ const LibraryPlex = ({
 		});
 	}, []);
 
+	// Snapshot the anchor chip's bounding rect at click-time so the menu can
+	// position itself purely from props (SpotlightContainerDecorator does not
+	// forward React refs to its DOM node).
+	const rectOf = (el) => {
+		if (!el || !el.getBoundingClientRect) return null;
+		const r = el.getBoundingClientRect();
+		return {top: r.top, left: r.left, bottom: r.bottom, right: r.right, width: r.width, height: r.height};
+	};
+
 	const openGenresMenu = useCallback((_v, anchor) => {
 		const menuItems = [{value: null, label: $L('All Genres')}].concat(
 			distinctGenres.map(g => ({value: g, label: g}))
 		);
-		setMenuState({type: 'genres', anchorEl: anchor, anchorId: 'libplex-chip-genres', items: menuItems, selectedValue: genresLocal});
+		setMenuState({type: 'genres', anchorRect: rectOf(anchor), anchorId: 'libplex-chip-genres', items: menuItems, selectedValue: genresLocal});
 	}, [distinctGenres, genresLocal]);
 
 	const openYearMenu = useCallback((_v, anchor) => {
 		const menuItems = [{value: null, label: $L('Any year')}].concat(
 			distinctYears.map(y => ({value: y, label: String(y)}))
 		);
-		setMenuState({type: 'year', anchorEl: anchor, anchorId: 'libplex-chip-year', items: menuItems, selectedValue: yearFilter});
+		setMenuState({type: 'year', anchorRect: rectOf(anchor), anchorId: 'libplex-chip-year', items: menuItems, selectedValue: yearFilter});
 	}, [distinctYears, yearFilter]);
 
 	const openRatingMenu = useCallback((_v, anchor) => {
-		setMenuState({type: 'rating', anchorEl: anchor, anchorId: 'libplex-chip-rating', items: RATING_BUCKETS, selectedValue: ratingFilter});
+		setMenuState({type: 'rating', anchorRect: rectOf(anchor), anchorId: 'libplex-chip-rating', items: RATING_BUCKETS, selectedValue: ratingFilter});
 	}, [ratingFilter]);
 
 	const handleMenuSelect = useCallback((value) => {
@@ -211,7 +229,7 @@ const LibraryPlex = ({
 			<div className={css.content}>
 				<header className={css.header}>
 					<div className={css.titleRow}>
-						<h1 className={css.title}>{library?.Name || $L('Library')}</h1>
+						<h1 className={css.title}>{library?.Name || genreFilter || $L('Library')}</h1>
 						<span className={css.count}>{filtered.length.toLocaleString()} {$L('items')}</span>
 					</div>
 					<SpottableButton className={css.searchBtn} onClick={onOpenSearch}>
@@ -249,7 +267,7 @@ const LibraryPlex = ({
 
 				{menuState ? (
 					<FilterMenu
-						anchorEl={menuState.anchorEl}
+						anchorRect={menuState.anchorRect}
 						items={menuState.items}
 						selectedValue={menuState.selectedValue}
 						onSelect={handleMenuSelect}
