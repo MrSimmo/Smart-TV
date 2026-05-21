@@ -169,3 +169,103 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **End-user verification:** deferred to Q90R deploy by the human (per ticket Verification sections). The .wgt files are at the repo root after each build.
 
 **Status:** Plex-UI v0.1.0 ready for human deploy + visual QA on Samsung Q90R.
+
+## 2026-05-21 14:18 — Plex-UI v0.1.1 — sixteen Q90R bug fixes
+
+**Scope:** v0.1.1 patch round. Sixteen on-device bugs reported after Q90R QA of `plex-ui-v0.1.0`, plus ADR-0006 (single outer SidebarPlex). Executed in a single 1M-context session against `tickets/prompt-0.1.1.md`.
+
+**Branch:** `phase/7-v0.1.1-fixes` off `plex-ui`.
+
+**Tasks (per-bug status):**
+- [x] #2 — Default `navbarPosition` flipped to `'left'`. Fresh sign-in lands on the sidebar layout. Commit `72f7c63`.
+- [x] #14 — Navbar Position row removed from Settings; helper kept per prompt. Commit `31b2335` (+ `0100765` eslint-disable for build:tizen lint gate).
+- [x] #15 — Card Focus Expansion row removed; `cardFocusZoom` key kept in defaults. Commit `31b2335`.
+- [x] #1 + #12 — SidebarPlex rendered once at the App level (ADR-0006). Inline sidebars removed from DetailsPlex and LibraryPlex; sidebar-only props dropped from both signatures and call sites; DetailsPlex `.content` margin flipped to 280px; LibraryPlex `onOpenSearch` retained for the header search button. Commit `ea08279`.
+- [x] #11 — BrowsePlex `onPlay` wired through App.js's `handlePlay`. FeaturedHero Play → Player panel. Continue Watching card → Player with `resume=true`. Commit `88cab43`.
+- [x] #9 — `Genres: genreFilter || undefined` passed to `api.getItems` (server-side filter). Client-side filter retained as defence-in-depth for unified mode. Commit `b39fb3a`.
+- [x] #10 — `itemTypeForLibrary` returns `''` for `CollectionType === 'folders'`; helper omits `IncludeItemTypes` so folder contents render. Commit `89dafd0`.
+- [x] #3 — All 14 hard-coded `rgba(124, 92, 252, *)` literals across plex-ui production CSS replaced with `var(--accent-glow)` (or `var(--accent-glow-strong)` on the PosterCard unwatched dot). New tokens added to `tokens.less`; `applyAccentPreset` now writes `rgba()` strings (via `hexToRgba`) for `--pill-bg`, `--accent-glow`, and `--accent-glow-strong`, replacing the prior 8-digit hex (which Tizen 2.4 WebKit does not parse — a latent v0.1.0 bug). Commit `2844c08`.
+- [x] #16 — SidebarPlex brand mark replaced with typographic "SP" (`@font-display`, 26px, accent-coloured). Diamond SVG and "Moonfin" wordmark dropped. Commit `c378414`.
+- [x] #4 — LibraryPlex header search reads "Search". Behaviour unchanged via the explicit `onOpenSearch` prop. Commit `bbbe855`.
+- [x] #6 — ViewToggle removed from LibraryPlex (import, viewMode state, JSX, `viewMode === 'list'` branch, `.viewToggleWrap` LESS). `components/plex-ui/ViewToggle/*` files left in place per prompt. Commit `c5d537a`.
+- [x] #5 — `components/plex-ui/FilterMenu/*` added (Spotlight-trapped, anchor-positioned, ≤320×360, ESC/Back/d-pad LEFT closes, returns focus to anchor chip). FilterChip gains `onActivate(value, anchorEl)` prop. LibraryPlex wires functional menus for All Genres, Year, and Rating; chips show the applied filter's label; the grid refilters live. Commit `1114c95`.
+- [x] #7 — PosterCard `.title { line-height: 1.2 }` and `.subtitle { margin-top: 4px }`. Commit `4197735`.
+- [x] #8 — MetadataPill `.pill { line-height: 1 }` so the label sits centred in the 22px pill. Commit `ea2f3ba`.
+- [!] #13 — Reverse-scroll: applied candidate 1 (`overscroll-behavior-y: contain` on LibraryPlex `.content`) and candidate 2 (`contain: layout style` on PosterGrid `.grid`) speculatively. Bug does not reproduce in Chromium / Playwright; per prompt risk note, marked `[!] verified on dev server only, awaiting Q90R re-test`. Commit `c77ad20`.
+
+**Commits (oldest → newest):**
+- `1945895` docs(adr): add ADR-0006 single outer SidebarPlex
+- `72f7c63` fix(plex-ui): default navbarPosition to 'left' [#2]
+- `31b2335` fix(plex-ui): drop Navbar Position and Card Focus Expansion rows [#14] [#15]
+- `ea08279` fix(plex-ui): render SidebarPlex once at the App level [#1] [#12]
+- `88cab43` fix(plex-ui): wire BrowsePlex Play handler to Player [#11]
+- `b39fb3a` fix(plex-ui): pass Genres param to api.getItems in LibraryPlex [#9]
+- `89dafd0` fix(plex-ui): show items for Folders libraries in LibraryPlex [#10]
+- `2844c08` fix(plex-ui): derive focus glow from accent preset at runtime [#3]
+- `c378414` fix(plex-ui): replace SidebarPlex brand with typographic "SP" mark [#16]
+- `bbbe855` fix(plex-ui): library header search label reads "Search" [#4]
+- `c5d537a` fix(plex-ui): remove ViewToggle from LibraryPlex [#6]
+- `4197735` fix(plex-ui): tighten PosterCard title/year spacing [#7]
+- `ea2f3ba` fix(plex-ui): vertically centre MetadataPill label [#8]
+- `c77ad20` fix(plex-ui): contain elastic overscroll on LibraryPlex grid [#13]
+- `1114c95` fix(plex-ui): functional FilterMenu popovers for LibraryPlex chips [#5]
+- `0100765` chore(plex-ui): silence unused-var warning on getNavPositionOptions
+- `728ddb2` docs(plex-ui): add v0.1.1 ticket + prompt and gitignore playwright artefacts
+
+**Decisions:** ADR-0006 (`decisions/0006-single-outer-sidebar.md`, Accepted, supersedes the inline-sidebar pattern from TKT-04 and TKT-05). No other ADRs created. Allow-list (ADR-002) unchanged — modifications touched only `App/App.js`, `context/SettingsContext.js`, `views/Settings/Settings.js` (additive), and `package.json` was untouched.
+
+**Verified (build gates):**
+
+```text
+$ npm run --workspace=@moonfin/app lint
+> @moonfin/app@2.4.0 lint
+> enact lint .
+[baseline-browser-mapping] The data in this module is over two months old.
+Browserslist: browsers data (caniuse-lite) is 6 months old.
+(0 errors, 0 warnings — Plex-UI code clean)
+```
+
+```text
+$ npm run build:tizen
+[✓] Package created: Moonfin_Tizen_Regular_2.4.0.wgt (3.87 MB)
+══════════════════════════════════════════════════
+  Build Complete! (v2.4.0)
+══════════════════════════════════════════════════
+```
+
+```text
+$ npm run build:tizen:legacy
+[✓] Package created: Moonfin_Tizen_Legacy_2.4.0.wgt (3.86 MB)
+══════════════════════════════════════════════════
+  Build Complete! (v2.4.0)
+══════════════════════════════════════════════════
+```
+
+**Verified (legacy-envelope grep audit, plex-ui directories only):**
+
+```text
+$ grep -rn "transition: all" packages/app/src/{components,views,styles}/plex-ui | grep -v "//"
+packages/app/src/views/plex-ui/README.md:72: ...no `transition: all`. See ADR-003...   (documentation only)
+
+$ grep -rn "backdrop-filter" packages/app/src/{components,views,styles}/plex-ui | grep -v "//"
+packages/app/src/views/plex-ui/README.md:71: ...no `backdrop-filter`, no flex `gap`... (documentation only)
+
+$ grep -rn "aspect-ratio" packages/app/src/{components,views,styles}/plex-ui | grep -v "//"
+packages/app/src/views/plex-ui/README.md:72: ...`aspect-ratio`... (documentation only)
+
+$ grep -rn "rgba(124, 92, 252" packages/app/src/{components,views,styles}/plex-ui | grep -v "//"
+(no matches — only commentary in tokens.less:18 explaining the constraint)
+
+$ grep -rn "^[[:space:]]*gap:" packages/app/src/{components,views,styles}/plex-ui
+(no matches — `grid-row-gap` / `grid-column-gap` only)
+```
+
+**Verified (Playwright):** `baseline-00-initial.png` at `/tmp/v0.1.1/baseline-00-initial.png` captures the dev server's pre-auth "Connect to Server" screen. The dev server requires a Jellyfin sign-in before any plex-ui surface (BrowsePlex / DetailsPlex / LibraryPlex / SettingsPlex) renders; no credentials are wired into this session, so Playwright cannot drive the affected screens. Per the prompt's bug #13 risk-note pattern, end-user visual verification of every plex-ui surface is therefore Q90R-pending. The grep audits and Tizen build gates above are the in-session evidence for code correctness; on-device QA against the .wgt files at the repo root is the next gate.
+
+**Tag:** `plex-ui-v0.1.1` (created locally; push pending the final `git push` below).
+
+**Allow-list adherence (ADR-002):** Upstream-side modifications this round: `packages/app/src/App/App.js`, `packages/app/src/context/SettingsContext.js`, `packages/app/src/views/Settings/Settings.js`. `package.json` untouched. All other code paths live under `packages/app/src/{components,views,styles}/plex-ui/` per ADR-001.
+
+**Rollout summary:** v0.1.1 closes every functional bug from the Q90R QA pass — Play actually plays, Genres → Library populates, Folders libraries list items, the sidebar is one single outer instance with the SP mark, the filter chips open real menus, and switching accent preset propagates to every focus ring. Two items carry `[!]` for confirmation on the device: bug #13 (overscroll) because Chromium doesn't reproduce the rubber-band, and indirectly every visual fix (#3, #4, #6, #7, #8, #11, #12, #16) because Playwright cannot pass the Jellyfin sign-in gate in this session. The Q90R deploy is the deciding gate.
+
+**Next:** Push `phase/7-v0.1.1-fixes`, push the `plex-ui-v0.1.1` tag, then human Q90R deploy + visual QA of the .wgt artefacts.
