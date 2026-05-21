@@ -50,6 +50,10 @@ const JellyseerrBrowse = lazy(() => import('../views/JellyseerrBrowse'));
 const JellyseerrPerson = lazy(() => import('../views/JellyseerrPerson'));
 
 import css from './App.module.less';
+// ADR-003: Plex-UI design tokens + base mixins. Imported after Sandstone
+// (loaded via ThemeDecorator) and App.module.less so Plex selectors win
+// cascade ties without `!important`. Side-effect import only.
+import '../styles/plex-ui/index.less';
 
 const MAX_HISTORY_LENGTH = 10;
 

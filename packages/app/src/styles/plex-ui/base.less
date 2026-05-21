@@ -1,0 +1,63 @@
+// Plex-UI base styles and shared mixins.
+//
+// .plex-focusable() is the two-state focus mixin from ADR-004. Apply it on
+// any focusable Plex element (Sandstone Spottable rows, chips, cards, CTAs).
+//
+// Two states:
+//   default   — transparent, --text-dim
+//   active    — current-route / applied-filter; --pill-bg + --accent-2 icon
+//   focused   — Spotlight d-pad cursor; solid --accent + white text + scale
+//   active+focused — focused wins (it's the user's primary attention anchor)
+//
+// `will-change` is NOT set here. It is set per-instance via
+// [data-near-focus="true"] selectors on the focused element + its immediate
+// spatial-nav neighbours, to avoid GPU VRAM thrash on Q90R-class hardware.
+//
+// Allowed transitions: transform, opacity only. No `transition: all`, no
+// width/height/padding/background-size animation. Legacy WebKit r152340 will
+// stutter.
+
+@import './tokens.less';
+
+.plex-focusable() {
+	// transform/opacity only — never `all`. Legacy WebKit gate.
+	transition: transform 200ms ease, opacity 200ms ease;
+	background: transparent;
+	color: var(--text-dim);
+	// `outline: none` is safe; the box-shadow drop in :focus is the visible
+	// focus ring (ADR-004: outline + border-radius renders poorly on Tizen 2.4).
+	outline: none;
+
+	&.plex-active {
+		background: var(--pill-bg);
+		color: var(--accent-2);
+	}
+
+	&:focus {
+		background: var(--accent);
+		color: #FFFFFF;
+		transform: scale(1.04);
+		box-shadow: 0 0 24px rgba(124, 92, 252, 0.4);
+	}
+}
+
+// Hero typographic fallback used when no Jellyfin clear-logo is set.
+// The size range (60–160px) is consumer-driven: FeaturedHero and DetailsPlex
+// compute the actual size based on title length before applying this class.
+.plex-display {
+	font-family: @font-display;
+	font-weight: 400;
+	letter-spacing: 0.01em;
+	line-height: 0.95;
+	color: var(--text);
+	text-transform: uppercase;
+}
+
+// Section labels (DISCOVER, LIBRARIES, MORE in the sidebar; CAST & CREW,
+// etc.). Tight tracking, all caps, muted colour.
+.plex-section-label {
+	font-size: @text-11;
+	letter-spacing: @text-11-tracking;
+	text-transform: uppercase;
+	color: var(--text-mute);
+}

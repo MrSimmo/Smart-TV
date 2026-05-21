@@ -42,3 +42,18 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **Verified:** `npm run lint` (clean, two browserslist-data warnings only); `npm run build:tizen` (Moonfin_Tizen_Regular_2.4.0.wgt, 3.80 MB); `npm run build:tizen:legacy` (Moonfin_Tizen_Legacy_2.4.0.wgt, 3.84 MB). End-user verification deferred to TKT-02 when there is a Plex view to render.
 
 **Next:** TKT-01 — design tokens and base styles.
+
+## 2026-05-21 — TKT-01 — Design tokens and base styles
+
+**Scope:** Phase 1 of the Plex-UI rollout. Create the LESS token layer and the `.plex-focusable` mixin every subsequent component will consume.
+
+**Tasks:**
+- [x] TKT-01 — Created `styles/plex-ui/tokens.less` (full ADR-003 token table: surfaces, text, accent, semantic), typography ramp + 8-point spacing as LESS variables, `.plex-focusable` mixin in `base.less` (ADR-004 two-state focus, transform/opacity transitions only), `.plex-display` typographic hero fallback, `.plex-section-label`. Side-effect import added to `App.js` after `App.module.less` so Plex selectors win cascade ties.
+
+**Changes:** `packages/app/src/styles/plex-ui/{tokens,base,index}.less` (new); `packages/app/src/App/App.js` (+4 lines, allow-listed touchpoint per ADR-002).
+
+**Decisions:** Bound by ADR-003 and ADR-004. No new ADRs. ADR-001 component-isolation respected — no upstream LESS modified; `variables.less` and `App.module.less` untouched.
+
+**Verified:** `npm run lint` (clean, browserslist-data warnings only); `npm run build:tizen` (Moonfin_Tizen_Regular_2.4.0.wgt clean); `npm run build:tizen:legacy` (Moonfin_Tizen_Legacy_2.4.0.wgt clean). No visible UI change — no consumers yet.
+
+**Next:** TKT-02 — SidebarPlex.

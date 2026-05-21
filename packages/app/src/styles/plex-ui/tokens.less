@@ -1,0 +1,61 @@
+// Plex-UI design tokens.
+//
+// CSS custom properties (colour, semantic) live on :root via :global so they
+// cascade everywhere regardless of which component pulls this file in.
+// LESS variables (spacing, type ramp) are build-time; pulled in via @import
+// in component .module.less files that want them.
+//
+// Source of truth: ADR-003. Do not introduce new tokens without updating the
+// ADR. Existing upstream --accent-color (set imperatively from
+// settings.focusColor at App/App.js:179) is preserved unchanged — Plex tokens
+// add --accent and --accent-2 as a separate channel.
+
+:global(:root) {
+	// Surfaces
+	--bg: #0E0F14;
+	--bg-2: #15171F;
+	--surface: #1B1E29;
+	--surface-2: #232735;
+	--line: #2A2F3F;
+
+	// Text
+	--text: #F4F5F8;
+	--text-dim: rgba(244, 245, 248, 0.72);
+	--text-mute: rgba(244, 245, 248, 0.48);
+
+	// Accent (Moonfin Purple default — preset switcher in TKT-06 overrides)
+	--accent: #7C5CFC;
+	--accent-2: #B89AFF;
+	--pill-bg: rgba(124, 92, 252, 0.18);
+
+	// Semantic
+	--warn: #F2A02E;
+	--good: #4ADE80;
+}
+
+// Typography ramp.
+//
+// Bebas Neue is used as the hero fallback when no clear-logo is available
+// (FeaturedHero, DetailsPlex title block). The fallback stack covers
+// pre-installed faces on Tizen 2.4 / WebKit r152340.
+@font-display: 'Bebas Neue', Impact, 'Arial Black', sans-serif;
+// @font-body: inherits Sandstone default — declared via cascade, not here.
+
+@text-11: 11px;            // section labels (uppercase, 0.12em tracking)
+@text-13: 13px;            // chip labels, small meta
+@text-16: 16px;            // item meta, secondary text
+@text-24: 24px;            // section titles
+@text-36: 36px;            // page titles (library header, breadcrumb anchor)
+@text-display-min: 60px;   // hero typographic fallback — short titles
+@text-display-max: 160px;  // hero typographic fallback — long titles
+
+@text-11-tracking: 0.12em;
+
+// Spacing — 8-point base.
+@s-2: 8px;
+@s-3: 12px;
+@s-4: 16px;
+@s-6: 24px;
+@s-8: 32px;
+@s-12: 48px;
+@s-16: 64px;

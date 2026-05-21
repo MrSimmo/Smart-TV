@@ -1,0 +1,10 @@
+// Single import target for the Plex-UI design layer.
+//
+// Pulled in once from App/App.js after Sandstone (ThemeDecorator) is loaded
+// so the Plex tokens cascade after Sandstone defaults. Component
+// .module.less files that need the LESS variables (@s-*, @text-*,
+// @font-display) should @import './tokens.less' directly — the side-effect
+// import here only sets the :root custom properties and base classes.
+
+@import './tokens.less';
+@import './base.less';

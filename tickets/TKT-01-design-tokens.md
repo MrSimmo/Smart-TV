@@ -62,4 +62,4 @@ npm run build:tizen
 npm run build:tizen:legacy
 ```
 
-## Status: ⬜
+## Status: ✅
