@@ -74,6 +74,7 @@ const LibraryPlex = ({
 		api.getItems({
 			ParentId: library.Id,
 			IncludeItemTypes: itemTypeForLibrary(library),
+			Genres: genreFilter || undefined,
 			Recursive: true,
 			Fields: 'UserData,MediaSources,ProductionYear,Width',
 			SortBy: sortKey,
@@ -83,6 +84,9 @@ const LibraryPlex = ({
 		}).then(res => {
 			if (cancelled) return;
 			let result = res?.Items || [];
+			// Defence-in-depth: server-side Genres filter is the primary path;
+			// the client-side pass below also catches unified-mode results that
+			// may bypass the server param.
 			if (genreFilter) {
 				result = result.filter(it => Array.isArray(it.Genres) && it.Genres.includes(genreFilter));
 			}
