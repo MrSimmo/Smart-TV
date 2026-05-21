@@ -7,8 +7,12 @@
 }
 
 .content {
-	margin-left: 280px; // sidebar full width per TKT-05 acceptance
+	margin-left: 280px; // ADR-006 outer SidebarPlex full width
 	padding: @s-6 @s-12 @s-12 @s-12;
+	// v0.1.1 bug #13: contain elastic overscroll so the focused-card
+	// transform near the top/bottom edge doesn't translate into a
+	// rubber-band on Tizen 2.4 WebKit.
+	overscroll-behavior-y: contain;
 }
 
 .header {

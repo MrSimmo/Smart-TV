@@ -8,4 +8,9 @@
 	grid-row-gap: @s-6;
 	grid-column-gap: @s-4;
 	padding: @s-4 0;
+	// v0.1.1 bug #13: layout/style containment so a focused PosterCard's
+	// scale(1.04) transform near the edges doesn't feed back into the
+	// scroll container's layout (the suspected cause of the inverted
+	// rubber-band on Q90R).
+	contain: layout style;
 }
