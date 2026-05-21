@@ -90,4 +90,4 @@ I will deploy and verify with the remote against a Movies library of >50 items:
 - D-pad spatial nav reaches every poster without dead zones.
 - Resume progress bar appears on items with playback progress.
 
-## Status: ⬜
+## Status: ✅

@@ -102,3 +102,18 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **Verified:** `npm run lint` clean; `npm run build:tizen` and `npm run build:tizen:legacy` both clean. End-user verification on Q90R deferred.
 
 **Next:** TKT-05 — LibraryPlex grid.
+
+## 2026-05-21 — TKT-05 — LibraryPlex grid with filter chips
+
+**Scope:** Phase 5. Library/collection view with full 280px SidebarPlex, 36px title + count + 320px search button, filter chip row (All Genres / Unwatched / 4K-HDR / Year / Rating / Sort with three distinct states), ViewToggle (grid/list with list as "Coming soon"), 7-col 2:3 padding-bottom poster grid with NEW/unwatched/resume overlays.
+
+**Tasks:**
+- [x] TKT-05 — Created `views/plex-ui/LibraryPlex/*` and `components/plex-ui/{FilterChip,PosterGrid,ViewToggle}/*`. FilterChip implements all three states (default/active/focused) with `:focus` after `.active` so focused wins via cascade. PosterGrid is a 7-col CSS Grid (grid-row-gap + grid-column-gap, not flex `gap`) consuming PosterCard's existing `poster` variant which already uses padding-bottom: 150% for the 2:3 ratio (no `aspect-ratio` property). Items fetched via `api.getItems({ParentId, IncludeItemTypes, Recursive, Limit: 200, Fields: 'UserData,MediaSources,ProductionYear,Width'})`. Client-side filters for `Unwatched` and `4K/HDR`; sort cycles through Name / Year / Rating / Recently Added. App.js Library panel branches on `uiTheme === 'plex'`.
+
+**Changes:** `views/plex-ui/LibraryPlex/{LibraryPlex.js,.module.less,index.js}` (new); `components/plex-ui/{FilterChip,PosterGrid,ViewToggle}/*` (new); `App/App.js` (+25 lines — lazy import + allow-listed branch in Library panel).
+
+**Decisions:** Bound by ADR-001/002/003/004. Pagination: did NOT integrate `VirtualGridList` (upstream uses it but the integration is tightly coupled to upstream's toolbar/sort/filter mosaic; reproducing it would widen the change well beyond the ticket scope). Plain CSS Grid for first release, 200-item cap. `aspect-ratio` strictly avoided. `gap` shorthand strictly avoided (grid-row-gap + grid-column-gap throughout). Genres/Year/Rating chips render as visual placeholders (hasMore chevron) without dropdown menus — a follow-up ticket can add the popovers.
+
+**Verified:** `npm run lint` clean; `npm run build:tizen` and `npm run build:tizen:legacy` both clean. End-user verification on Q90R deferred.
+
+**Next:** TKT-06 — Polish, accent presets, QA.

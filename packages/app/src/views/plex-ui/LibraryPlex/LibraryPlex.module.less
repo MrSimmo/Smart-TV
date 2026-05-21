@@ -1,0 +1,86 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.view {
+	background: var(--bg);
+	color: var(--text);
+	min-height: 100vh;
+}
+
+.content {
+	margin-left: 280px; // sidebar full width per TKT-05 acceptance
+	padding: @s-6 @s-12 @s-12 @s-12;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: @s-4;
+}
+
+.titleRow {
+	display: inline-flex;
+	align-items: baseline;
+}
+
+.title {
+	margin: 0 @s-3 0 0;
+	font-size: @text-36;
+	font-weight: 700;
+	color: var(--text);
+}
+
+.count {
+	font-size: @text-16;
+	color: var(--text-dim);
+}
+
+.searchBtn {
+	display: inline-flex;
+	align-items: center;
+	width: 320px;
+	height: 40px;
+	padding: 0 @s-4;
+	background: var(--surface-2);
+	color: var(--text-mute);
+	border: 0;
+	border-radius: 20px;
+	outline: none;
+	cursor: pointer;
+	font-size: @text-13;
+	transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+
+	&:focus {
+		background: var(--accent);
+		color: #FFFFFF;
+		transform: scale(1.04);
+		box-shadow: 0 0 18px rgba(124, 92, 252, 0.4);
+	}
+}
+
+.searchIcon {
+	width: 18px;
+	height: 18px;
+	fill: currentColor;
+	margin-right: @s-2;
+}
+
+.filters {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	padding: @s-3 0;
+	border-bottom: 1px solid var(--line);
+	margin-bottom: @s-3;
+}
+
+.viewToggleWrap {
+	margin-left: auto;
+}
+
+.empty {
+	padding: @s-12 0;
+	text-align: center;
+	color: var(--text-mute);
+	font-size: @text-16;
+}

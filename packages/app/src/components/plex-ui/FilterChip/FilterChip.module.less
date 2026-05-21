@@ -1,0 +1,37 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	height: 36px;
+	padding: 0 @s-3;
+	background: var(--surface-2);
+	color: var(--text-dim);
+	border: 0;
+	border-radius: 18px;
+	outline: none;
+	cursor: pointer;
+	font-size: @text-13;
+	font-weight: 600;
+	margin-right: @s-2;
+	transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.chip.active {
+	background: var(--pill-bg);
+	color: var(--accent-2);
+}
+
+// `:focus` after `.active` so focused wins visually when both apply.
+.chip:focus {
+	background: var(--accent);
+	color: #FFFFFF;
+	transform: scale(1.04);
+	box-shadow: 0 0 18px rgba(124, 92, 252, 0.4);
+}
+
+.chevron {
+	margin-left: @s-2;
+	font-size: @text-11;
+	opacity: 0.7;
+}

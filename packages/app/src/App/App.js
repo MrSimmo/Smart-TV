@@ -37,6 +37,7 @@ import BrowsePlex from '../views/plex-ui/BrowsePlex';
 const Details = lazy(() => import('../views/Details'));
 const DetailsPlex = lazy(() => import('../views/plex-ui/DetailsPlex'));
 const Library = lazy(() => import('../views/Library'));
+const LibraryPlex = lazy(() => import('../views/plex-ui/LibraryPlex'));
 const Search = lazy(() => import('../views/Search'));
 const Settings = lazy(() => import('../views/Settings'));
 const Player = lazy(() => import('../views/Player'));
@@ -901,14 +902,37 @@ const AppContent = (props) => {
 					</Panel>
 					<Panel>
 						{panelIndex === PANELS.LIBRARY && (
-							<Library
-							library={selectedLibrary}
-							genreFilter={genreFilter}
-							onSelectItem={handleSelectItem}
-							onViewPhoto={handleViewPhoto}
-							onHome={handleHome}
-								backHandlerRef={backHandlerRef}
-						/>
+							settings.uiTheme === 'plex' ? (
+								// ADR-002 Plex-UI variant. Renders SidebarPlex at 280px
+								// inline; App.js's left-sidebar gate is bypassed in the
+								// Library panel.
+								<LibraryPlex
+									library={selectedLibrary}
+									genreFilter={genreFilter}
+									onSelectItem={handleSelectItem}
+									libraries={libraries}
+									activeView={getActiveView()}
+									onHome={handleHome}
+									onSearch={handleOpenSearch}
+									onShuffle={handleShuffle}
+									onGenres={handleOpenGenres}
+									onFavorites={handleOpenFavorites}
+									onDiscover={handleOpenJellyseerr}
+									onSyncPlay={openSyncPlay}
+									onSettings={handleOpenSettings}
+									onSelectLibrary={handleSelectLibrary}
+									onUserMenu={handleOpenAccountModal}
+								/>
+							) : (
+								<Library
+									library={selectedLibrary}
+									genreFilter={genreFilter}
+									onSelectItem={handleSelectItem}
+									onViewPhoto={handleViewPhoto}
+									onHome={handleHome}
+									backHandlerRef={backHandlerRef}
+								/>
+							)
 						)}
 					</Panel>
 					<Panel>

@@ -1,0 +1,11 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	// `gap` shorthand and flex/grid `gap` are not supported on the legacy
+	// WebKit envelope (ADR-003). Use `grid-row-gap` / `grid-column-gap`.
+	grid-row-gap: @s-6;
+	grid-column-gap: @s-4;
+	padding: @s-4 0;
+}
