@@ -1,12 +1,13 @@
 // LibraryPlex — Plex-styled library/collection view.
 //
-// Layout (per design/mockups/moonfin_03_library.png):
-//   - SidebarPlex at the full 280px expanded width (not collapsed).
+// Layout (per design/mockups/moonfin_03_library.png; v0.1.1 ADR-006):
+//   - Outer SidebarPlex (App.js-level) sits to the left of .content.
 //   - Header: library title (36px / 700) + item count + 320px search button.
 //   - FilterChip row: All Genres, Unwatched, 4K/HDR, Year, Rating, Sort.
 //     Three distinct states (default / active / focused) per ADR-004.
-//   - ViewToggle (grid / list) at top-right of the filter row.
 //   - 7-column 2:3 poster grid (PosterGrid -> PosterCard 'poster' variant).
+//   - v0.1.1: ViewToggle removed (list view never shipped); grid is the only
+//     view.
 //
 // Filter & sort state is local to this view for the first release. Filters
 // applied client-side over the fetched items; full server-side filter shape
@@ -19,7 +20,6 @@ import SpotlightContainerDecorator from '@enact/spotlight/SpotlightContainerDeco
 import {useAuth} from '../../../context/AuthContext';
 import FilterChip from '../../../components/plex-ui/FilterChip';
 import PosterGrid from '../../../components/plex-ui/PosterGrid';
-import ViewToggle from '../../../components/plex-ui/ViewToggle';
 
 import css from './LibraryPlex.module.less';
 
@@ -65,7 +65,6 @@ const LibraryPlex = ({
 	const [sortKey, setSortKey] = useState('SortName');
 	const [unwatchedOnly, setUnwatchedOnly] = useState(false);
 	const [uhdOnly, setUhdOnly] = useState(false);
-	const [viewMode, setViewMode] = useState('grid');
 
 	useEffect(() => {
 		if (!api || !library) {
@@ -147,18 +146,12 @@ const LibraryPlex = ({
 					<FilterChip value="year" hasMore>{$L('Year')}</FilterChip>
 					<FilterChip value="rating" hasMore>{$L('Rating')}</FilterChip>
 					<FilterChip value="sort" active onClick={cycleSort}>{sortLabel}</FilterChip>
-					<span className={css.viewToggleWrap}>
-						<ViewToggle mode={viewMode} onChange={setViewMode} />
-					</span>
 				</FilterRow>
 
 				{loading ? (
 					<div className={css.empty}>{$L('Loading…')}</div>
 				) : filtered.length === 0 ? (
 					<div className={css.empty}>{$L('No items found')}</div>
-				) : viewMode === 'list' ? (
-					// List view deferred — toggle remains focusable per TKT-05 spec.
-					<div className={css.empty}>{$L('List view — coming soon')}</div>
 				) : (
 					<PosterGrid items={filtered} onSelect={handleSelect} />
 				)}
