@@ -21,7 +21,6 @@ import Spottable from '@enact/spotlight/Spottable';
 import SpotlightContainerDecorator from '@enact/spotlight/SpotlightContainerDecorator';
 import {useAuth} from '../../../context/AuthContext';
 import {formatDuration, getImageUrl, getBackdropId, getLogoUrl} from '../../../utils/helpers';
-import SidebarPlex from '../../../components/plex-ui/SidebarPlex';
 import MetadataPill from '../../../components/plex-ui/MetadataPill';
 import CrewStrip from '../../../components/plex-ui/CrewStrip';
 import CastRow from '../../../components/plex-ui/CastRow';
@@ -55,24 +54,14 @@ const computeDisplaySize = (title) => {
 	return 60;
 };
 
+// ADR-006: SidebarPlex is rendered once at the App level; DetailsPlex no
+// longer renders an inline sidebar or accepts navigation handlers.
 const DetailsPlex = ({
 	itemId,
 	initialItem,
 	onPlay,
 	onSelectItem, // eslint-disable-line no-unused-vars
-	onSelectPerson,
-	libraries = [],
-	activeView = '',
-	onHome,
-	onSearch,
-	onShuffle,
-	onGenres,
-	onFavorites,
-	onDiscover,
-	onSettings,
-	onSelectLibrary,
-	onUserMenu,
-	onSyncPlay
+	onSelectPerson
 }) => {
 	const {api, serverUrl} = useAuth();
 	const [item, setItem] = useState(initialItem || null);
@@ -98,11 +87,6 @@ const DetailsPlex = ({
 	if (!item) {
 		return (
 			<div className={css.view}>
-				<SidebarPlex collapsed libraries={libraries} activeView={activeView}
-					onHome={onHome} onSearch={onSearch} onShuffle={onShuffle}
-					onGenres={onGenres} onFavorites={onFavorites} onDiscover={onDiscover}
-					onSettings={onSettings} onSelectLibrary={onSelectLibrary}
-					onUserMenu={onUserMenu} onSyncPlay={onSyncPlay} />
 				<div className={css.content}>
 					<div className={css.loadingDot} />
 				</div>
@@ -133,22 +117,6 @@ const DetailsPlex = ({
 
 	return (
 		<div className={css.view}>
-			<SidebarPlex
-				collapsed
-				libraries={libraries}
-				activeView={activeView}
-				onHome={onHome}
-				onSearch={onSearch}
-				onShuffle={onShuffle}
-				onGenres={onGenres}
-				onFavorites={onFavorites}
-				onDiscover={onDiscover}
-				onSettings={onSettings}
-				onSelectLibrary={onSelectLibrary}
-				onUserMenu={onUserMenu}
-				onSyncPlay={onSyncPlay}
-			/>
-
 			<div className={css.content}>
 				{backdropUrl ? (
 					<div className={css.backdropWrap}>

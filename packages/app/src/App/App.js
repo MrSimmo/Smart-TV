@@ -786,14 +786,23 @@ const AppContent = (props) => {
 		}
 	};
 
-	const showNavBar = panelIndex !== PANELS.LOGIN &&
-		panelIndex !== PANELS.PLAYER &&
-		panelIndex !== PANELS.LIBRARY &&
-		panelIndex !== PANELS.ADD_SERVER &&
-		panelIndex !== PANELS.ADD_USER &&
-		panelIndex !== PANELS.GENRES &&
-		panelIndex !== PANELS.FAVORITES &&
-		!(panelIndex === PANELS.DETAILS && ['Playlist', 'MusicAlbum', 'MusicArtist'].includes(selectedItem?.Type));
+	// ADR-006: when the Plex UI is active, the outer SidebarPlex renders across
+	// every panel except the immersive / pre-auth ones. The upstream blacklist
+	// (LIBRARY / GENRES / FAVORITES / music-Details) is preserved for
+	// uiTheme === 'original'.
+	const showNavBar = settings.uiTheme === 'plex'
+		? (panelIndex !== PANELS.LOGIN &&
+			panelIndex !== PANELS.PLAYER &&
+			panelIndex !== PANELS.ADD_SERVER &&
+			panelIndex !== PANELS.ADD_USER)
+		: (panelIndex !== PANELS.LOGIN &&
+			panelIndex !== PANELS.PLAYER &&
+			panelIndex !== PANELS.LIBRARY &&
+			panelIndex !== PANELS.ADD_SERVER &&
+			panelIndex !== PANELS.ADD_USER &&
+			panelIndex !== PANELS.GENRES &&
+			panelIndex !== PANELS.FAVORITES &&
+			!(panelIndex === PANELS.DETAILS && ['Playlist', 'MusicAlbum', 'MusicArtist'].includes(selectedItem?.Type)));
 
 	return (
 		<div className={css.app} {...props}>
@@ -876,27 +885,14 @@ const AppContent = (props) => {
 					<Panel>
 						{panelIndex === PANELS.DETAILS && (
 							settings.uiTheme === 'plex' ? (
-								// ADR-002 Plex-UI variant. Renders SidebarPlex collapsed
-								// inline; App.js's left-sidebar gate is bypassed for
-								// non-music item types.
+								// ADR-002 + ADR-006: outer SidebarPlex provides navigation;
+								// DetailsPlex only consumes item + playback props.
 								<DetailsPlex
 									itemId={selectedItem?.Id}
 									initialItem={selectedItem}
 									onPlay={handlePlay}
 									onSelectItem={handleSelectItem}
 									onSelectPerson={handleSelectPerson}
-									libraries={libraries}
-									activeView={getActiveView()}
-									onHome={handleHome}
-									onSearch={handleOpenSearch}
-									onShuffle={handleShuffle}
-									onGenres={handleOpenGenres}
-									onFavorites={handleOpenFavorites}
-									onDiscover={handleOpenJellyseerr}
-									onSyncPlay={openSyncPlay}
-									onSettings={handleOpenSettings}
-									onSelectLibrary={handleSelectLibrary}
-									onUserMenu={handleOpenAccountModal}
 								/>
 							) : (
 								<Details
@@ -914,25 +910,13 @@ const AppContent = (props) => {
 					<Panel>
 						{panelIndex === PANELS.LIBRARY && (
 							settings.uiTheme === 'plex' ? (
-								// ADR-002 Plex-UI variant. Renders SidebarPlex at 280px
-								// inline; App.js's left-sidebar gate is bypassed in the
-								// Library panel.
+								// ADR-002 + ADR-006: outer SidebarPlex provides navigation;
+								// LibraryPlex only consumes library + selection props.
 								<LibraryPlex
 									library={selectedLibrary}
 									genreFilter={genreFilter}
 									onSelectItem={handleSelectItem}
-									libraries={libraries}
-									activeView={getActiveView()}
-									onHome={handleHome}
-									onSearch={handleOpenSearch}
-									onShuffle={handleShuffle}
-									onGenres={handleOpenGenres}
-									onFavorites={handleOpenFavorites}
-									onDiscover={handleOpenJellyseerr}
-									onSyncPlay={openSyncPlay}
-									onSettings={handleOpenSettings}
-									onSelectLibrary={handleSelectLibrary}
-									onUserMenu={handleOpenAccountModal}
+									onOpenSearch={handleOpenSearch}
 								/>
 							) : (
 								<Library

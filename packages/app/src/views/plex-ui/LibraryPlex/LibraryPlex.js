@@ -17,7 +17,6 @@ import $L from '@enact/i18n/$L';
 import Spottable from '@enact/spotlight/Spottable';
 import SpotlightContainerDecorator from '@enact/spotlight/SpotlightContainerDecorator';
 import {useAuth} from '../../../context/AuthContext';
-import SidebarPlex from '../../../components/plex-ui/SidebarPlex';
 import FilterChip from '../../../components/plex-ui/FilterChip';
 import PosterGrid from '../../../components/plex-ui/PosterGrid';
 import ViewToggle from '../../../components/plex-ui/ViewToggle';
@@ -46,22 +45,15 @@ const is4kOrHdr = (it) => {
 	return v.Width >= 3800 || (v.VideoRangeType && v.VideoRangeType !== 'SDR');
 };
 
+// ADR-006: SidebarPlex is rendered once at the App level; LibraryPlex no
+// longer renders an inline sidebar or accepts navigation handlers. The
+// library header keeps its own search button — wired via the explicit
+// onOpenSearch prop (same pattern as BrowsePlex).
 const LibraryPlex = ({
 	library,
 	genreFilter,
 	onSelectItem,
-	libraries = [],
-	activeView = '',
-	onHome,
-	onSearch,
-	onShuffle,
-	onGenres,
-	onFavorites,
-	onDiscover,
-	onSettings,
-	onSelectLibrary,
-	onUserMenu,
-	onSyncPlay
+	onOpenSearch
 }) => {
 	const {api} = useAuth();
 	const [items, setItems] = useState([]);
@@ -127,28 +119,13 @@ const LibraryPlex = ({
 
 	return (
 		<div className={css.view}>
-			<SidebarPlex
-				libraries={libraries}
-				activeView={activeView}
-				onHome={onHome}
-				onSearch={onSearch}
-				onShuffle={onShuffle}
-				onGenres={onGenres}
-				onFavorites={onFavorites}
-				onDiscover={onDiscover}
-				onSettings={onSettings}
-				onSelectLibrary={onSelectLibrary}
-				onUserMenu={onUserMenu}
-				onSyncPlay={onSyncPlay}
-			/>
-
 			<div className={css.content}>
 				<header className={css.header}>
 					<div className={css.titleRow}>
 						<h1 className={css.title}>{library?.Name || $L('Library')}</h1>
 						<span className={css.count}>{filtered.length.toLocaleString()} {$L('items')}</span>
 					</div>
-					<SpottableButton className={css.searchBtn} onClick={onSearch}>
+					<SpottableButton className={css.searchBtn} onClick={onOpenSearch}>
 						<svg viewBox="0 0 24 24" className={css.searchIcon}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
 						<span>{$L('Search')} {library?.Name || ''}</span>
 					</SpottableButton>
