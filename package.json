@@ -1,6 +1,8 @@
 {
 	"name": "moonfin",
 	"version": "2.4.0",
+	"description": "Plex-inspired UI variant of Moonfin-Client/Smart-TV — Tizen-focused fork.",
+	"_fork": "Plex-inspired UI variant of Moonfin-Client/Smart-TV",
 	"private": true,
 	"workspaces": [
 		"packages/*"
@@ -17,6 +19,7 @@
 	},
 	"devDependencies": {
 		"@enact/cli": "^7.2.1",
+		"baseline-browser-mapping": "^2.10.31",
 		"cross-env": "^7.0.3",
 		"eslint-config-enact-proxy": "^1.0.7"
 	},

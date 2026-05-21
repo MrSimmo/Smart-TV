@@ -93,7 +93,9 @@ const defaultSettings = {
 	showSyncPlayButton: true,
 	stereoUpmixEnabled: false,
 	blockedRatings: [],
-	jellyseerrRows: null
+	jellyseerrRows: null,
+	// ADR-002: Plex-UI fork toggle (additive only). Values: 'plex' | 'original'.
+	uiTheme: 'plex'
 };
 
 export {DEFAULT_HOME_ROWS};
