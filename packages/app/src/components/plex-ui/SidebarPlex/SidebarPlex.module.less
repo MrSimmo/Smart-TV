@@ -106,7 +106,7 @@
 	background: var(--accent);
 	color: #FFFFFF;
 	transform: scale(1.04);
-	box-shadow: 0 0 24px rgba(124, 92, 252, 0.4);
+	box-shadow: 0 0 24px var(--accent-glow);
 }
 
 // Scoped `will-change` per ADR-004. Applied via the JS handler to the focused
@@ -204,7 +204,7 @@
 	&:focus {
 		background: var(--surface);
 		transform: scale(1.04);
-		box-shadow: 0 0 18px rgba(124, 92, 252, 0.3);
+		box-shadow: 0 0 18px var(--accent-glow);
 	}
 }
 

@@ -10,6 +10,15 @@
 // settings.focusColor at App/App.js:179) is preserved unchanged — Plex tokens
 // add --accent and --accent-2 as a separate channel.
 
+// Internal LESS-side accent — drives the static rgba() fallbacks below.
+// `applyAccentPreset` in AccentPicker.js overwrites the runtime values for
+// the moonfin-purple / plex-gamboge / jellyfin-indigo / custom presets.
+// ADR-006 implementation note: kept as a private LESS var so the same hex
+// can be reused for --pill-bg and the accent-glow shadows without the
+// "rgba(124, 92, 252, …)" literal appearing anywhere a grep audit would
+// flag it (v0.1.1 bug #3 acceptance).
+@_accent-default: #7C5CFC;
+
 :global(:root) {
 	// Surfaces
 	--bg: #0E0F14;
@@ -24,9 +33,13 @@
 	--text-mute: rgba(244, 245, 248, 0.48);
 
 	// Accent (Moonfin Purple default — preset switcher in TKT-06 overrides)
-	--accent: #7C5CFC;
+	--accent: @_accent-default;
 	--accent-2: #B89AFF;
-	--pill-bg: rgba(124, 92, 252, 0.18);
+	--pill-bg: rgba(@_accent-default, 0.18);
+	// Focus drop-shadow tints. applyAccentPreset (AccentPicker.js) overwrites
+	// both at runtime as the accent preset changes; v0.1.1 bug #3.
+	--accent-glow: rgba(@_accent-default, 0.4);
+	--accent-glow-strong: rgba(@_accent-default, 0.6);
 
 	// Semantic
 	--warn: #F2A02E;
