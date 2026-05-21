@@ -1,0 +1,167 @@
+// PosterCard styles.
+//
+// Two variants:
+//   .variant-continue: 296×168 landscape (Continue Watching row).
+//   .variant-poster:   2:3 portrait. Aspect ratio via padding-bottom 150%
+//                       on the .frame element. CSS `aspect-ratio` is forbidden
+//                       in the legacy bundle (ADR-003).
+//
+// Focus state: 3px --accent ring + scale 1.04. Scoped `will-change` is set
+// per-instance via [data-near-focus="true"] from the parent row's JS.
+
+@import '../../../styles/plex-ui/tokens.less';
+
+.card {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	background: transparent;
+	border: 0;
+	outline: none;
+	cursor: pointer;
+	color: var(--text);
+	transition: transform 180ms ease;
+
+	&[data-near-focus="true"] {
+		will-change: transform;
+	}
+
+	&:focus {
+		transform: scale(1.04);
+	}
+
+	&:focus .frame {
+		box-shadow: 0 0 0 3px var(--accent), 0 0 24px rgba(124, 92, 252, 0.4);
+	}
+}
+
+.variant-continue {
+	width: 296px;
+	margin-right: @s-4;
+}
+
+.variant-continue .frame {
+	width: 296px;
+	height: 168px;
+	border-radius: 12px;
+	overflow: hidden;
+	background: var(--surface);
+	position: relative;
+}
+
+.variant-poster {
+	width: 100%;
+}
+
+// 2:3 padding-bottom trick for the legacy WebKit envelope. `aspect-ratio` is
+// not available (ADR-003). The `.fill` child is absolutely positioned within.
+.variant-poster .frame {
+	position: relative;
+	width: 100%;
+	padding-bottom: 150%;
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--surface);
+}
+
+.fill {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.variant-continue .fill {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: @font-display;
+	font-size: 48px;
+	color: var(--text-mute);
+	background: var(--surface);
+}
+
+.meta {
+	padding: @s-2 0;
+	text-align: left;
+}
+
+.variant-poster .meta {
+	text-align: center;
+}
+
+.title {
+	font-size: @text-13;
+	font-weight: 600;
+	color: var(--text);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.subtitle {
+	font-size: @text-11;
+	color: var(--text-mute);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-top: 2px;
+}
+
+.badge {
+	position: absolute;
+	top: @s-2;
+	left: @s-2;
+	padding: 2px @s-2;
+	background: rgba(0, 0, 0, 0.7);
+	color: var(--text);
+	border-radius: 4px;
+	font-size: @text-11;
+	font-weight: 700;
+	letter-spacing: @text-11-tracking;
+	text-transform: uppercase;
+}
+
+.unwatchedDot {
+	position: absolute;
+	top: @s-2;
+	right: @s-2;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: var(--accent);
+	box-shadow: 0 0 8px rgba(124, 92, 252, 0.6);
+}
+
+.progressTrack {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 4px;
+	background: rgba(0, 0, 0, 0.45);
+}
+
+.progressFill {
+	height: 100%;
+	background: var(--accent);
+	// width set inline from JS; transition for the rare case where progress
+	// updates while the card is visible.
+	transition: width 200ms ease;
+}

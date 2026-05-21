@@ -32,6 +32,7 @@ import useInactivityTimer from '../hooks/useInactivityTimer';
 import {useThemeMusic} from '../hooks/useThemeMusic';
 import Login from '../views/Login';
 import Browse from '../views/Browse';
+import BrowsePlex from '../views/plex-ui/BrowsePlex';
 
 const Details = lazy(() => import('../views/Details'));
 const Library = lazy(() => import('../views/Library'));
@@ -838,14 +839,26 @@ const AppContent = (props) => {
 						<Login onLoggedIn={handleLoggedIn} />
 					</Panel>
 					<Panel>
-						<Browse
-							onSelectItem={handleSelectItem}
-							onSelectLibrary={handleSelectLibrary}
-							isVisible={panelIndex === PANELS.BROWSE}
-							onFocusItemThemeMusic={themeMusic.playThemeMusicDelayed}
-							onBlurItemThemeMusic={themeMusic.cancelDelayed}
-							onLeaveThemeMusic={themeMusic.stopThemeMusic}
-						/>
+						{settings.uiTheme === 'plex' ? (
+							// ADR-002 Plex-UI variant. Self-contained — does not consume
+							// upstream theme-music callbacks (out of scope for the Plex
+							// browse hero in TKT-03).
+							<BrowsePlex
+								onSelectItem={handleSelectItem}
+								onOpenSearch={handleOpenSearch}
+								onOpenSettings={handleOpenSettings}
+								isVisible={panelIndex === PANELS.BROWSE}
+							/>
+						) : (
+							<Browse
+								onSelectItem={handleSelectItem}
+								onSelectLibrary={handleSelectLibrary}
+								isVisible={panelIndex === PANELS.BROWSE}
+								onFocusItemThemeMusic={themeMusic.playThemeMusicDelayed}
+								onBlurItemThemeMusic={themeMusic.cancelDelayed}
+								onLeaveThemeMusic={themeMusic.stopThemeMusic}
+							/>
+						)}
 					</Panel>
 					<Panel>
 						{panelIndex === PANELS.DETAILS && (

@@ -72,3 +72,18 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **Verified:** `npm run lint` clean (browserslist-data warnings only); `npm run build:tizen` and `npm run build:tizen:legacy` both produce clean `.wgt` files. End-user verification deferred to the human's Q90R deploy: toggle `settings.uiTheme` between `'plex'` and `'original'`, confirm both sidebars render, walk both focus states with the d-pad.
 
 **Next:** TKT-03 — BrowsePlex + FeaturedHero.
+
+## 2026-05-21 — TKT-03 — BrowsePlex + FeaturedHero + PosterCard
+
+**Scope:** Phase 3. Plex-styled home view: left-heavy hero with clear-logo (typographic fallback), metadata strip, italic tagline, capped plot, white Play CTA with optional resume sub-label; Continue Watching row of 296×168 cards with resume progress bar.
+
+**Tasks:**
+- [x] TKT-03 — Created `components/plex-ui/{FeaturedHero,PosterCard}/*` and `views/plex-ui/BrowsePlex/*`. PosterCard supports two variants (`continue` 296×168 and `poster` 2:3) — the latter implemented via padding-bottom 150% rather than `aspect-ratio` for the legacy bundle. FeaturedHero uses `getLogoUrl` from helpers.js and falls back to a `.plex-display` typographic title scaled by character count (60–160px range from ADR-003). BrowsePlex fetches featured + resume from existing `api.getRandomItems` / `api.getResumeItems`. App.js Browse panel branches on `uiTheme === 'plex'`.
+
+**Changes:** `components/plex-ui/PosterCard/{PosterCard.js,.module.less,index.js}` (new); `components/plex-ui/FeaturedHero/{FeaturedHero.js,.module.less,index.js}` (new); `views/plex-ui/BrowsePlex/{BrowsePlex.js,.module.less,index.js}` (new); `App/App.js` (+13 lines — lazy import + allow-listed branch in Browse panel).
+
+**Decisions:** Bound by ADR-001/002/003. Upstream Browse's full theme-music + multi-server + plugin pipeline NOT duplicated in BrowsePlex — those remain on upstream Browse when `uiTheme === 'original'`. PosterCard designed for reuse by LibraryPlex (TKT-05) via the `variant` prop.
+
+**Verified:** `npm run lint` clean (browserslist warnings only); `npm run build:tizen` and `npm run build:tizen:legacy` both clean. End-user verification deferred to Q90R deploy.
+
+**Next:** TKT-04 — DetailsPlex.

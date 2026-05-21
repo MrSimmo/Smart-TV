@@ -1,0 +1,124 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.view {
+	background: var(--bg);
+	color: var(--text);
+	min-height: 100vh;
+	// Sidebar is fixed at 280px on the left.
+	margin-left: 280px;
+}
+
+.topBar {
+	display: flex;
+	align-items: center;
+	padding: @s-4 @s-12;
+	background: transparent;
+	position: relative;
+	z-index: 2;
+}
+
+.searchBtn {
+	display: inline-flex;
+	align-items: center;
+	width: 380px;
+	height: 44px;
+	padding: 0 @s-4;
+	background: var(--surface-2);
+	color: var(--text-mute);
+	border: 0;
+	border-radius: 22px;
+	outline: none;
+	cursor: pointer;
+	font-size: @text-13;
+	margin-right: @s-3;
+	transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+
+	&:focus {
+		background: var(--accent);
+		color: #FFFFFF;
+		transform: scale(1.04);
+		box-shadow: 0 0 18px rgba(124, 92, 252, 0.4);
+	}
+}
+
+.searchIcon {
+	width: 18px;
+	height: 18px;
+	fill: currentColor;
+	margin-right: @s-2;
+}
+
+.iconBtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	background: var(--surface-2);
+	color: var(--text);
+	border: 0;
+	border-radius: 50%;
+	outline: none;
+	cursor: pointer;
+	margin-right: @s-2;
+	transition: transform 180ms ease, background-color 180ms ease;
+
+	&:focus {
+		background: var(--accent);
+		color: #FFFFFF;
+		transform: scale(1.04);
+		box-shadow: 0 0 18px rgba(124, 92, 252, 0.4);
+	}
+}
+
+.iconSvg {
+	width: 20px;
+	height: 20px;
+	fill: currentColor;
+}
+
+.section {
+	padding: @s-6 @s-12 @s-12 @s-12;
+}
+
+.sectionHeader {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: @s-3;
+}
+
+.sectionTitle {
+	margin: 0;
+	font-size: @text-24;
+	font-weight: 700;
+	color: var(--text);
+}
+
+.seeAll {
+	background: transparent;
+	border: 0;
+	color: var(--text-mute);
+	font-size: @text-13;
+	cursor: pointer;
+	outline: none;
+	transition: color 180ms ease;
+
+	&:focus {
+		color: var(--accent-2);
+	}
+}
+
+// Horizontal row; rely on overflow-x rather than flex `gap` (ADR-003 legacy
+// gate). Child PosterCard handles right-margin spacing on its own variant.
+.row {
+	white-space: nowrap;
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: @s-2 0 @s-4 0;
+	scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+	display: none;
+}
