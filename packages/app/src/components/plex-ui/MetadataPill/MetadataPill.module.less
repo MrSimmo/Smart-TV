@@ -11,6 +11,10 @@
 	white-space: nowrap;
 	margin-right: @s-2;
 	vertical-align: middle;
+	// v0.1.1 bug #8: lock line-height so the label sits visually centred in
+	// the 22px pill on Tizen 2.4 — the default Sandstone line-height was
+	// taller than the pill, pushing text upward by a couple of pixels.
+	line-height: 1;
 }
 
 .icon {
