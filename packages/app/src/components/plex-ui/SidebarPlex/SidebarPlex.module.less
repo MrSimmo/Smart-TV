@@ -36,26 +36,23 @@
 	}
 }
 
+// v0.1.1 bug #16: brand reduces to the typographic "SP" mark. ADR-003
+// typography ramp — @font-display, 26px so the mark sits comfortably in the
+// same vertical slot the diamond + "Moonfin" wordmark previously occupied.
 .brand {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	padding: @s-4 @s-4 @s-6 @s-4;
-}
-
-.brandMark {
-	width: 28px;
-	height: 28px;
-	min-width: 28px;
-	fill: var(--accent);
-	margin-right: @s-3;
 }
 
 .brandText {
 	font-family: @font-display;
-	font-size: 22px;
-	letter-spacing: 0.02em;
-	color: var(--text);
-	text-transform: none;
+	font-size: 26px;
+	letter-spacing: 0.06em;
+	color: var(--accent);
+	text-transform: uppercase;
+	line-height: 1;
 }
 
 .section {
@@ -141,7 +138,6 @@
 
 .sidebar.collapsed .label,
 .sidebar.collapsed .sectionLabel,
-.sidebar.collapsed .brandText,
 .sidebar.collapsed .userMeta,
 .sidebar.collapsed .chevron {
 	display: none;

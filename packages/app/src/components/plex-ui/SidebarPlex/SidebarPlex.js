@@ -173,10 +173,10 @@ const SidebarPlex = ({
 			spotlightId="navbar"
 		>
 			<div className={css.brand}>
-				<svg viewBox="0 0 24 24" className={css.brandMark} aria-hidden="true">
-					<path d="M12 2L1 12l11 10 11-10z" />
-				</svg>
-				{!collapsed ? <span className={css.brandText}>Moonfin</span> : null}
+				{/* v0.1.1 bug #16: typographic "SP" mark replaces the diamond + */}
+				{/* "Moonfin" wordmark. Same span renders in both expanded and    */}
+				{/* collapsed states; .brand styles handle the size and centring. */}
+				<span className={css.brandText} aria-hidden="true">SP</span>
 			</div>
 
 			<div className={css.section}>
