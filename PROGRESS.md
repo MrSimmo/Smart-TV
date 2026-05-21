@@ -138,3 +138,34 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **Verified:** `npm run lint` clean; `npm run build:tizen` and `npm run build:tizen:legacy` both clean; performance grep audit zero forbidden patterns in production CSS. End-user QA (focus coverage, accent preset switching across all three views) deferred to Q90R deploy by the human.
 
 **Next:** Tag `plex-ui-v0.1.0`, push tags, write the final rollout-complete summary, report commits + tag back to the human.
+
+## 2026-05-21 — Plex-UI v0.1.0 rollout complete
+
+**Scope:** Full TKT-00 → TKT-06 rollout executed in a single 1M-context session via `prompts/ONESHOT-execute-all.md`.
+
+**Commits (oldest → newest):**
+- `be00e7e` chore(plex-ui): scaffold directories and uiTheme flag (TKT-00)
+- `235251b` feat(plex-ui): add design tokens and base mixins (TKT-01)
+- `b57065e` feat(plex-ui): add SidebarPlex with two-state focus (TKT-02)
+- `eb937f4` feat(plex-ui): add BrowsePlex and FeaturedHero (TKT-03)
+- `21d246e` feat(plex-ui): add DetailsPlex with collapsed sidebar (TKT-04)
+- `e874ba0` feat(plex-ui): add LibraryPlex grid with filter chips (TKT-05)
+- `6a79a78` feat(plex-ui): add accent presets, Settings integration, and visual QA polish (TKT-06)
+
+**Tag:** `plex-ui-v0.1.0` pushed to `origin` (https://github.com/MrSimmo/Smart-TV.git).
+
+**Allow-list adherence (ADR-002):** Only `packages/app/src/App/App.js`, `packages/app/src/context/SettingsContext.js`, `packages/app/src/views/Settings/Settings.js`, and `package.json` were modified upstream-side. All other new code lives under `packages/app/src/{components,views,styles}/plex-ui/`. No upstream component file renamed or rewritten.
+
+**Verification gates passed each commit:** `npm run lint` clean (browserslist-data warnings only — not Plex-UI code); `npm run build:tizen` produced Moonfin_Tizen_Regular_2.4.0.wgt clean; `npm run build:tizen:legacy` produced Moonfin_Tizen_Legacy_2.4.0.wgt clean.
+
+**Performance audit (TKT-06):** zero production matches for `transition: all`, `backdrop-filter`, `aspect-ratio`. `will-change` matches scoped to `[data-near-focus="true"]` selectors only (SidebarPlex row, PosterCard).
+
+**Scope deliberately deferred for follow-ups:**
+- Genre / Year / Rating filter chip popovers in LibraryPlex (chips render as static labels with hasMore chevron; selecting them is a no-op this release).
+- `VirtualGridList`-backed virtualisation in LibraryPlex (plain CSS Grid for first release; libraries up to ~200 items perform well).
+- Upstream Browse's full pipeline (theme-music callbacks, multi-server unified mode, plugin-driven media bar) is not duplicated in BrowsePlex — those remain on upstream Browse when `uiTheme === 'original'`.
+- Light theme — would require a new ADR.
+
+**End-user verification:** deferred to Q90R deploy by the human (per ticket Verification sections). The .wgt files are at the repo root after each build.
+
+**Status:** Plex-UI v0.1.0 ready for human deploy + visual QA on Samsung Q90R.
