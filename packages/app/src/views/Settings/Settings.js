@@ -754,7 +754,6 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 			{renderOptionItem('focusColor', $L('Focus Border Color'), getFocusColorOptions(), $L('Blue'), 'edit')}
 			{renderOptionItem('clockDisplay', $L('Clock Display'), getClockDisplayOptions(), $L('24-Hour'), 'timer')}
 			{renderMissingItem('24-hour-clock', $L('24-Hour Clock'), $L('Handled via Clock Display on Smart-TV'), 'scheduler')}
-			{renderToggleItem('cardFocusZoom', $L('Card Focus Expansion'), $L('Slightly enlarge cards when focused'), 'zoomin')}
 			{renderToggleItem('showHomeBackdrop', $L('Show Backdrops'), $L('Show background art while browsing'), 'picture')}
 			{renderOptionItem('backdropBlurHome', $L('Browsing Blur'), getBlurOptions(), $L('Medium'), 'background')}
 			{renderOptionItem('backdropBlurDetail', $L('Details Blur'), getBlurOptions(), $L('Medium'), 'background')}
@@ -767,7 +766,6 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 
 	const renderPersonalizationNavigation = () => (
 		<>
-			{renderOptionItem('navbarPosition', $L('Navbar Position'), getNavPositionOptions(), $L('Top Bar'), 'browser')}
 			{renderOptionItem('uiColor', $L('Navbar Color'), getUiColorOptions(), $L('Gray'), 'colorpicker')}
 			{renderOptionItem('uiOpacity', $L('Navbar Opacity'), UI_OPACITY_OPTIONS, '85%', 'contrast')}
 			{renderToggleItem('showShuffleButton', $L('Shuffle Button'), $L('Show shuffle button in navigation bar'), 'shuffle')}
