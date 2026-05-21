@@ -29,6 +29,7 @@ const SpottableButton = Spottable('button');
 
 const BrowsePlex = ({
 	onSelectItem,
+	onPlay,
 	onOpenSearch,
 	onOpenSettings,
 	isVisible = true
@@ -63,8 +64,12 @@ const BrowsePlex = ({
 		return () => { cancelled = true; };
 	}, [api, serverUrl, isVisible, settings.featuredItemCount, settings.featuredContentType]);
 
-	const handlePlay = useCallback((item) => onSelectItem?.(item), [onSelectItem]);
+	// FeaturedHero Play CTA → fire the upstream play pipeline (Player panel).
+	const handlePlay = useCallback((item) => onPlay?.(item), [onPlay]);
+	// FeaturedHero "more info" + general card-tap → open Details.
 	const handleSelect = useCallback((item) => onSelectItem?.(item), [onSelectItem]);
+	// Continue Watching cards resume directly into the Player.
+	const handleResumePlay = useCallback((item) => onPlay?.(item, true), [onPlay]);
 
 	return (
 		<div className={css.view}>
@@ -96,7 +101,7 @@ const BrowsePlex = ({
 								key={item.Id}
 								item={item}
 								variant="continue"
-								onSelect={handleSelect}
+								onSelect={handleResumePlay}
 								spotlightId={i === 0 ? 'row-0' : undefined}
 							/>
 						))}

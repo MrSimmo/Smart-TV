@@ -867,6 +867,7 @@ const AppContent = (props) => {
 							// browse hero in TKT-03).
 							<BrowsePlex
 								onSelectItem={handleSelectItem}
+								onPlay={handlePlay}
 								onOpenSearch={handleOpenSearch}
 								onOpenSettings={handleOpenSettings}
 								isVisible={panelIndex === PANELS.BROWSE}
