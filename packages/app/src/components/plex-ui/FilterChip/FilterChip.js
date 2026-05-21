@@ -13,8 +13,15 @@ import css from './FilterChip.module.less';
 
 const SpottableButton = Spottable('button');
 
-const FilterChip = ({active = false, onClick, children, spotlightId, value, hasMore = false}) => {
-	const handle = useCallback(() => onClick?.(value), [onClick, value]);
+// v0.1.1 bug #5: `onActivate` is the preferred handler (it receives both the
+// chip value and the DOM element so the caller can anchor a FilterMenu).
+// `onClick` is kept for chips that just toggle a boolean (Unwatched, 4K/HDR,
+// Sort) — onActivate, if provided, wins.
+const FilterChip = ({active = false, onClick, onActivate, children, spotlightId, value, hasMore = false}) => {
+	const handle = useCallback((e) => {
+		const fn = onActivate || onClick;
+		fn?.(value, e?.currentTarget);
+	}, [onActivate, onClick, value]);
 	return (
 		<SpottableButton
 			className={`${css.chip} ${active ? css.active : ''}`}

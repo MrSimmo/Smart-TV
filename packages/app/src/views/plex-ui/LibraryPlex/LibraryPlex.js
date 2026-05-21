@@ -17,8 +17,10 @@ import {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import $L from '@enact/i18n/$L';
 import Spottable from '@enact/spotlight/Spottable';
 import SpotlightContainerDecorator from '@enact/spotlight/SpotlightContainerDecorator';
+import Spotlight from '@enact/spotlight';
 import {useAuth} from '../../../context/AuthContext';
 import FilterChip from '../../../components/plex-ui/FilterChip';
+import FilterMenu from '../../../components/plex-ui/FilterMenu';
 import PosterGrid from '../../../components/plex-ui/PosterGrid';
 
 import css from './LibraryPlex.module.less';
@@ -49,6 +51,15 @@ const is4kOrHdr = (it) => {
 	return v.Width >= 3800 || (v.VideoRangeType && v.VideoRangeType !== 'SDR');
 };
 
+// v0.1.1 bug #5: rating buckets reflect Plex's standard ladder + "Any".
+const RATING_BUCKETS = [
+	{value: 9, label: '★ 9+'},
+	{value: 8, label: '★ 8+'},
+	{value: 7, label: '★ 7+'},
+	{value: 6, label: '★ 6+'},
+	{value: null, label: 'Any rating'}
+];
+
 // ADR-006: SidebarPlex is rendered once at the App level; LibraryPlex no
 // longer renders an inline sidebar or accepts navigation handlers. The
 // library header keeps its own search button — wired via the explicit
@@ -65,6 +76,13 @@ const LibraryPlex = ({
 	const [sortKey, setSortKey] = useState('SortName');
 	const [unwatchedOnly, setUnwatchedOnly] = useState(false);
 	const [uhdOnly, setUhdOnly] = useState(false);
+	// v0.1.1 bug #5: FilterMenu-driven filters. genresLocal is distinct from
+	// the App-level genreFilter (which arrives via prop from the Genres view).
+	const [genresLocal, setGenresLocal] = useState(null);
+	const [yearFilter, setYearFilter] = useState(null);
+	const [ratingFilter, setRatingFilter] = useState(null);
+	// Open-menu descriptor: {type, anchorEl, items, selectedValue, anchorId}.
+	const [menuState, setMenuState] = useState(null);
 
 	useEffect(() => {
 		if (!api || !library) {
@@ -109,14 +127,77 @@ const LibraryPlex = ({
 		let out = items;
 		if (unwatchedOnly) out = out.filter(isUnwatched);
 		if (uhdOnly) out = out.filter(is4kOrHdr);
+		if (genresLocal) out = out.filter(it => Array.isArray(it.Genres) && it.Genres.includes(genresLocal));
+		if (yearFilter != null) out = out.filter(it => it.ProductionYear === yearFilter);
+		if (ratingFilter != null) {
+			out = out.filter(it => typeof it.CommunityRating === 'number' && it.CommunityRating >= ratingFilter);
+		}
 		return out;
-	}, [items, unwatchedOnly, uhdOnly]);
+	}, [items, unwatchedOnly, uhdOnly, genresLocal, yearFilter, ratingFilter]);
+
+	// Distinct genres and years from the fetched items, for the filter menus.
+	const distinctGenres = useMemo(() => {
+		const seen = new Set();
+		items.forEach(it => (it.Genres || []).forEach(g => { if (g) seen.add(g); }));
+		return Array.from(seen).sort();
+	}, [items]);
+
+	const distinctYears = useMemo(() => {
+		const seen = new Set();
+		items.forEach(it => { if (typeof it.ProductionYear === 'number') seen.add(it.ProductionYear); });
+		return Array.from(seen).sort((a, b) => b - a);
+	}, [items]);
 
 	const toggleUnwatched = useCallback(() => setUnwatchedOnly(v => !v), []);
 	const toggleUhd = useCallback(() => setUhdOnly(v => !v), []);
 	const cycleSort = useCallback(() => {
 		setSortKey(prev => prev === 'SortName' ? 'PremiereDate' : prev === 'PremiereDate' ? 'CommunityRating' : prev === 'CommunityRating' ? 'DateCreated' : 'SortName');
 	}, []);
+
+	// v0.1.1 bug #5: filter-menu open/close + selection plumbing.
+	const closeMenu = useCallback(() => {
+		setMenuState(prev => {
+			if (prev?.anchorId) {
+				setTimeout(() => Spotlight.focus(prev.anchorId), 30);
+			}
+			return null;
+		});
+	}, []);
+
+	const openGenresMenu = useCallback((_v, anchor) => {
+		const menuItems = [{value: null, label: $L('All Genres')}].concat(
+			distinctGenres.map(g => ({value: g, label: g}))
+		);
+		setMenuState({type: 'genres', anchorEl: anchor, anchorId: 'libplex-chip-genres', items: menuItems, selectedValue: genresLocal});
+	}, [distinctGenres, genresLocal]);
+
+	const openYearMenu = useCallback((_v, anchor) => {
+		const menuItems = [{value: null, label: $L('Any year')}].concat(
+			distinctYears.map(y => ({value: y, label: String(y)}))
+		);
+		setMenuState({type: 'year', anchorEl: anchor, anchorId: 'libplex-chip-year', items: menuItems, selectedValue: yearFilter});
+	}, [distinctYears, yearFilter]);
+
+	const openRatingMenu = useCallback((_v, anchor) => {
+		setMenuState({type: 'rating', anchorEl: anchor, anchorId: 'libplex-chip-rating', items: RATING_BUCKETS, selectedValue: ratingFilter});
+	}, [ratingFilter]);
+
+	const handleMenuSelect = useCallback((value) => {
+		setMenuState(prev => {
+			if (!prev) return null;
+			if (prev.type === 'genres') setGenresLocal(value);
+			else if (prev.type === 'year') setYearFilter(value);
+			else if (prev.type === 'rating') setRatingFilter(value);
+			if (prev.anchorId) {
+				setTimeout(() => Spotlight.focus(prev.anchorId), 30);
+			}
+			return null;
+		});
+	}, []);
+
+	const genresChipLabel = genresLocal || $L('All Genres');
+	const yearChipLabel = yearFilter != null ? String(yearFilter) : $L('Year');
+	const ratingChipLabel = ratingFilter != null ? '★ ' + ratingFilter + '+' : $L('Rating');
 
 	const sortLabel = sortKey === 'SortName' ? $L('Sort: Name')
 		: sortKey === 'PremiereDate' ? $L('Sort: Year')
@@ -140,13 +221,41 @@ const LibraryPlex = ({
 				</header>
 
 				<FilterRow className={css.filters}>
-					<FilterChip value="genres" hasMore>{$L('All Genres')}</FilterChip>
+					<FilterChip
+						value="genres"
+						hasMore
+						active={!!genresLocal}
+						spotlightId="libplex-chip-genres"
+						onActivate={openGenresMenu}
+					>{genresChipLabel}</FilterChip>
 					<FilterChip value="unwatched" active={unwatchedOnly} onClick={toggleUnwatched}>{$L('Unwatched')}</FilterChip>
 					<FilterChip value="uhd" active={uhdOnly} onClick={toggleUhd}>{$L('4K / HDR')}</FilterChip>
-					<FilterChip value="year" hasMore>{$L('Year')}</FilterChip>
-					<FilterChip value="rating" hasMore>{$L('Rating')}</FilterChip>
+					<FilterChip
+						value="year"
+						hasMore
+						active={yearFilter != null}
+						spotlightId="libplex-chip-year"
+						onActivate={openYearMenu}
+					>{yearChipLabel}</FilterChip>
+					<FilterChip
+						value="rating"
+						hasMore
+						active={ratingFilter != null}
+						spotlightId="libplex-chip-rating"
+						onActivate={openRatingMenu}
+					>{ratingChipLabel}</FilterChip>
 					<FilterChip value="sort" active onClick={cycleSort}>{sortLabel}</FilterChip>
 				</FilterRow>
+
+				{menuState ? (
+					<FilterMenu
+						anchorEl={menuState.anchorEl}
+						items={menuState.items}
+						selectedValue={menuState.selectedValue}
+						onSelect={handleMenuSelect}
+						onClose={closeMenu}
+					/>
+				) : null}
 
 				{loading ? (
 					<div className={css.empty}>{$L('Loading…')}</div>
