@@ -17,6 +17,7 @@ import {useVersionCheck} from '../hooks/useVersionCheck';
 import UpdateNotification from '../components/UpdateNotification';
 import NavBar from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
+import SidebarPlex from '../components/plex-ui/SidebarPlex';
 import AccountModal from '../components/AccountModal';
 import ExitDialog from '../components/ExitDialog';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -783,19 +784,38 @@ const AppContent = (props) => {
 	return (
 		<div className={css.app} {...props}>
 			{showNavBar && settings.navbarPosition === 'left' ? (
-				<Sidebar
-					libraries={libraries}
-					onHome={handleHome}
-					onSearch={handleOpenSearch}
-					onShuffle={handleShuffle}
-					onGenres={handleOpenGenres}
-					onFavorites={handleOpenFavorites}
-					onDiscover={handleOpenJellyseerr}
-					onSyncPlay={openSyncPlay}
-					onSettings={handleOpenSettings}
-					onSelectLibrary={handleSelectLibrary}
-					onUserMenu={handleOpenAccountModal}
-				/>
+				settings.uiTheme === 'plex' ? (
+					// ADR-002: Plex-UI variant. Same prop shape as Sidebar plus
+					// `activeView` for current-route highlighting.
+					<SidebarPlex
+						libraries={libraries}
+						activeView={getActiveView()}
+						onHome={handleHome}
+						onSearch={handleOpenSearch}
+						onShuffle={handleShuffle}
+						onGenres={handleOpenGenres}
+						onFavorites={handleOpenFavorites}
+						onDiscover={handleOpenJellyseerr}
+						onSyncPlay={openSyncPlay}
+						onSettings={handleOpenSettings}
+						onSelectLibrary={handleSelectLibrary}
+						onUserMenu={handleOpenAccountModal}
+					/>
+				) : (
+					<Sidebar
+						libraries={libraries}
+						onHome={handleHome}
+						onSearch={handleOpenSearch}
+						onShuffle={handleShuffle}
+						onGenres={handleOpenGenres}
+						onFavorites={handleOpenFavorites}
+						onDiscover={handleOpenJellyseerr}
+						onSyncPlay={openSyncPlay}
+						onSettings={handleOpenSettings}
+						onSelectLibrary={handleSelectLibrary}
+						onUserMenu={handleOpenAccountModal}
+					/>
+				)
 			) : showNavBar ? (
 				<NavBar
 					activeView={getActiveView()}

@@ -1,0 +1,260 @@
+// SidebarPlex styles.
+//
+// Two-state focus model (ADR-004):
+//   default: transparent, --text-dim
+//   active:  --pill-bg + --accent-2 (current route)
+//   focused: solid --accent + white text + scale 1.04 + accent shadow
+//   active + focused: focused wins (focused styles defined last in cascade)
+//
+// `will-change: transform` is set per-instance via [data-near-focus="true"]
+// from the .js handler, never on every row.
+
+@import '../../../styles/plex-ui/tokens.less';
+
+@width-expanded: 280px;
+@width-collapsed: 88px;
+@row-height: 52px;
+@icon-col-width: 22px;
+
+.sidebar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: @width-expanded;
+	background: var(--bg);
+	border-right: 1px solid var(--line);
+	display: flex;
+	flex-direction: column;
+	z-index: 1000;
+	// transform/opacity only — no `transition: all` (ADR-003 legacy gate).
+	transition: width 200ms ease;
+	overflow: hidden;
+
+	&.collapsed {
+		width: @width-collapsed;
+	}
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	padding: @s-4 @s-4 @s-6 @s-4;
+}
+
+.brandMark {
+	width: 28px;
+	height: 28px;
+	min-width: 28px;
+	fill: var(--accent);
+	margin-right: @s-3;
+}
+
+.brandText {
+	font-family: @font-display;
+	font-size: 22px;
+	letter-spacing: 0.02em;
+	color: var(--text);
+	text-transform: none;
+}
+
+.section {
+	flex: 0 0 auto;
+	padding: @s-2 @s-3;
+
+	& + & {
+		margin-top: @s-3;
+	}
+}
+
+.sectionLabel {
+	font-size: @text-11;
+	letter-spacing: @text-11-tracking;
+	text-transform: uppercase;
+	color: var(--text-mute);
+	padding: @s-2 @s-3 @s-2 (@s-3 + @s-2);
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: @row-height;
+	margin: 2px 0;
+	padding: 0 @s-3;
+	background: transparent;
+	color: var(--text-dim);
+	border: 0;
+	border-radius: 10px;
+	outline: none;
+	cursor: pointer;
+	text-align: left;
+	font-size: @text-16;
+	// transform + background-color only. background-color is a paint-cheap
+	// property on Q90R; box-shadow gets the GPU layer via :focus.
+	transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.row.active {
+	background: var(--pill-bg);
+	color: var(--accent-2);
+}
+
+// `:focus` is defined after .active so focused styles override active when
+// both apply (ADR-004 "focused trumps active visually").
+.row:focus {
+	background: var(--accent);
+	color: #FFFFFF;
+	transform: scale(1.04);
+	box-shadow: 0 0 24px rgba(124, 92, 252, 0.4);
+}
+
+// Scoped `will-change` per ADR-004. Applied via the JS handler to the focused
+// row and its immediate spatial-nav neighbours only — never the whole list.
+.row[data-near-focus="true"] {
+	will-change: transform;
+}
+
+.iconCol {
+	width: @icon-col-width;
+	height: @icon-col-width;
+	min-width: @icon-col-width;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: @s-3;
+}
+
+.icon {
+	width: 100%;
+	height: 100%;
+	fill: currentColor;
+}
+
+.label {
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: 500;
+}
+
+.sidebar.collapsed .label,
+.sidebar.collapsed .sectionLabel,
+.sidebar.collapsed .brandText,
+.sidebar.collapsed .userMeta,
+.sidebar.collapsed .chevron {
+	display: none;
+}
+
+.sidebar.collapsed .row,
+.sidebar.collapsed .userBtn {
+	justify-content: center;
+	padding: 0;
+}
+
+.sidebar.collapsed .iconCol {
+	margin-right: 0;
+}
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 22px;
+	height: 20px;
+	padding: 0 6px;
+	border-radius: 10px;
+	background: var(--surface-2);
+	color: var(--text);
+	font-size: @text-11;
+	font-weight: 600;
+}
+
+.row.active .badge {
+	background: var(--accent-2);
+	color: var(--bg);
+}
+
+.row:focus .badge {
+	background: rgba(255, 255, 255, 0.2);
+	color: #FFFFFF;
+}
+
+.footer {
+	margin-top: auto;
+	padding: @s-3;
+	border-top: 1px solid var(--line);
+}
+
+.userBtn {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: @s-2;
+	background: transparent;
+	color: var(--text);
+	border: 0;
+	border-radius: 10px;
+	outline: none;
+	cursor: pointer;
+	text-align: left;
+	transition: transform 180ms ease, background-color 180ms ease;
+
+	&:focus {
+		background: var(--surface);
+		transform: scale(1.04);
+		box-shadow: 0 0 18px rgba(124, 92, 252, 0.3);
+	}
+}
+
+.avatarImg,
+.avatarFallback {
+	width: 36px;
+	height: 36px;
+	min-width: 36px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin-right: @s-3;
+}
+
+.avatarFallback {
+	background: var(--accent);
+	color: #FFFFFF;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: @text-16;
+}
+
+.userMeta {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	overflow: hidden;
+}
+
+.userName {
+	font-size: @text-16;
+	color: var(--text);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.userServer {
+	font-size: @text-11;
+	color: var(--text-mute);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.chevron {
+	width: 18px;
+	height: 18px;
+	min-width: 18px;
+	fill: var(--text-mute);
+	margin-left: @s-2;
+}

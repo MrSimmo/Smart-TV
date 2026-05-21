@@ -74,4 +74,4 @@ npm run build:tizen:legacy
 
 I will deploy to the Samsung Q90R and verify by toggling `uiTheme` in Settings, then walking the sidebar with the remote to confirm both focus states and the route-switching behaviour.
 
-## Status: ⬜
+## Status: ✅

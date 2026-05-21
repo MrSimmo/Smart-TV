@@ -57,3 +57,18 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **Verified:** `npm run lint` (clean, browserslist-data warnings only); `npm run build:tizen` (Moonfin_Tizen_Regular_2.4.0.wgt clean); `npm run build:tizen:legacy` (Moonfin_Tizen_Legacy_2.4.0.wgt clean). No visible UI change — no consumers yet.
 
 **Next:** TKT-02 — SidebarPlex.
+
+## 2026-05-21 — TKT-02 — SidebarPlex with two-state focus
+
+**Scope:** Phase 2. The Plex-inspired left nav with DISCOVER / LIBRARIES / MORE sections, two-state focus (active + focused), 280px expanded / 88px collapsed, and the server/profile footer.
+
+**Tasks:**
+- [x] TKT-02 — Created `components/plex-ui/SidebarPlex/{SidebarPlex.js,SidebarPlex.module.less,index.js}`. Reuses upstream `libraries` prop and existing handlers (no new fetches). Two-state focus per ADR-004 — `.active` for current route, `:focus` for Spotlight cursor; focused wins via cascade order. `collapsed` prop renders the 88px icon-only rail used by TKT-04. `will-change: transform` is set per-instance via `[data-near-focus="true"]` from the JS focus handler, never on the whole list. Wired into `App.js` via the allow-listed branch on `settings.uiTheme === 'plex'`.
+
+**Changes:** `components/plex-ui/SidebarPlex/{SidebarPlex.js,.module.less,index.js}` (new); `App/App.js` (+18 lines — additive branch in the existing left-sidebar conditional, plus the import). Allow-list intact: App.js, SettingsContext.js, Settings views, package.json.
+
+**Decisions:** New code lives under `components/plex-ui/` per ADR-001. Routing touchpoint is the single conditional in App.js as named in ADR-002. Used `.js` rather than ticket's `.jsx` to match the codebase's universal convention (no .jsx files exist anywhere; enact-cli config targets `.js`).
+
+**Verified:** `npm run lint` clean (browserslist-data warnings only); `npm run build:tizen` and `npm run build:tizen:legacy` both produce clean `.wgt` files. End-user verification deferred to the human's Q90R deploy: toggle `settings.uiTheme` between `'plex'` and `'original'`, confirm both sidebars render, walk both focus states with the d-pad.
+
+**Next:** TKT-03 — BrowsePlex + FeaturedHero.
