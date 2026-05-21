@@ -87,4 +87,4 @@ npm run build:tizen:legacy
 
 I will deploy and verify with the remote against at least three items: a film with a clear-logo, a film without one (typographic fallback), and a film with resume progress (sub-label rendering).
 
-## Status: ⬜
+## Status: ✅

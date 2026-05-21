@@ -35,6 +35,7 @@ import Browse from '../views/Browse';
 import BrowsePlex from '../views/plex-ui/BrowsePlex';
 
 const Details = lazy(() => import('../views/Details'));
+const DetailsPlex = lazy(() => import('../views/plex-ui/DetailsPlex'));
 const Library = lazy(() => import('../views/Library'));
 const Search = lazy(() => import('../views/Search'));
 const Settings = lazy(() => import('../views/Settings'));
@@ -862,15 +863,40 @@ const AppContent = (props) => {
 					</Panel>
 					<Panel>
 						{panelIndex === PANELS.DETAILS && (
-							<Details
-								itemId={selectedItem?.Id}
-								initialItem={selectedItem}
-								onPlay={handlePlay}
-								onSelectItem={handleSelectItem}
-								onSelectPerson={handleSelectPerson}
-								onItemDeleted={handleBack}
-							backHandlerRef={backHandlerRef}
-						/>
+							settings.uiTheme === 'plex' ? (
+								// ADR-002 Plex-UI variant. Renders SidebarPlex collapsed
+								// inline; App.js's left-sidebar gate is bypassed for
+								// non-music item types.
+								<DetailsPlex
+									itemId={selectedItem?.Id}
+									initialItem={selectedItem}
+									onPlay={handlePlay}
+									onSelectItem={handleSelectItem}
+									onSelectPerson={handleSelectPerson}
+									libraries={libraries}
+									activeView={getActiveView()}
+									onHome={handleHome}
+									onSearch={handleOpenSearch}
+									onShuffle={handleShuffle}
+									onGenres={handleOpenGenres}
+									onFavorites={handleOpenFavorites}
+									onDiscover={handleOpenJellyseerr}
+									onSyncPlay={openSyncPlay}
+									onSettings={handleOpenSettings}
+									onSelectLibrary={handleSelectLibrary}
+									onUserMenu={handleOpenAccountModal}
+								/>
+							) : (
+								<Details
+									itemId={selectedItem?.Id}
+									initialItem={selectedItem}
+									onPlay={handlePlay}
+									onSelectItem={handleSelectItem}
+									onSelectPerson={handleSelectPerson}
+									onItemDeleted={handleBack}
+									backHandlerRef={backHandlerRef}
+								/>
+							)
 						)}
 					</Panel>
 					<Panel>

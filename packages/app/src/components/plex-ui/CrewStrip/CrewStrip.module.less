@@ -1,0 +1,28 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.strip {
+	display: grid;
+	grid-template-columns: 140px 1fr;
+	grid-row-gap: @s-2;
+	grid-column-gap: @s-4;
+	margin: @s-3 0;
+	padding: 0;
+}
+
+.label {
+	font-size: @text-11;
+	letter-spacing: @text-11-tracking;
+	text-transform: uppercase;
+	color: var(--text-mute);
+	font-weight: 700;
+	margin: 0;
+	align-self: center;
+}
+
+.value {
+	font-size: @text-16;
+	color: var(--text-dim);
+	margin: 0;
+	text-decoration: underline;
+	text-decoration-color: var(--line);
+}

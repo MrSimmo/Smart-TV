@@ -1,0 +1,41 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.pill {
+	display: inline-flex;
+	align-items: center;
+	height: 22px;
+	padding: 0 @s-2;
+	border-radius: 4px;
+	font-size: @text-13;
+	font-weight: 600;
+	white-space: nowrap;
+	margin-right: @s-2;
+	vertical-align: middle;
+}
+
+.icon {
+	display: inline-flex;
+	margin-right: 4px;
+	font-size: @text-11;
+}
+
+.variant-good {
+	background: var(--good);
+	color: #0E1F0E;
+}
+
+.variant-warn {
+	background: var(--warn);
+	color: #1F1404;
+}
+
+.variant-accent {
+	background: var(--pill-bg);
+	color: var(--accent-2);
+}
+
+.variant-neutral {
+	background: var(--surface-2);
+	color: var(--text-dim);
+	border: 1px solid var(--line);
+}

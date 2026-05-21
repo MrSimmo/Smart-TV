@@ -87,3 +87,18 @@ Project progress log. Status: [x] done · [!] failed (retry) · [ ] not started 
 **Verified:** `npm run lint` clean (browserslist warnings only); `npm run build:tizen` and `npm run build:tizen:legacy` both clean. End-user verification deferred to Q90R deploy.
 
 **Next:** TKT-04 — DetailsPlex.
+
+## 2026-05-21 — TKT-04 — DetailsPlex with collapsed sidebar
+
+**Scope:** Phase 4. Item details view with collapsed 88px SidebarPlex rail, breadcrumb, clear-logo / typographic title, facts row + genre/tech pills, neutral "In Library" chip, primary Play CTA + 4 60px circular buttons, CrewStrip 2-column grid, CastRow 110px circular portraits.
+
+**Tasks:**
+- [x] TKT-04 — Created `views/plex-ui/DetailsPlex/*`, `components/plex-ui/{MetadataPill,CrewStrip,CastRow}/*`. SidebarPlex renders collapsed inline. Item data via `api.getItem(itemId)` (same endpoint upstream Details consumes). People array split: `Type === 'Actor' || 'GuestStar'` → CastRow; other roles → CrewStrip. MetadataPill (`good | warn | accent | neutral` variants) reused across facts row and tech badges. App.js Details panel branches on `uiTheme === 'plex'`.
+
+**Changes:** `views/plex-ui/DetailsPlex/{DetailsPlex.js,.module.less,index.js}` (new); `components/plex-ui/{MetadataPill,CrewStrip,CastRow}/*` (new); `App/App.js` (+25 lines — lazy import + allow-listed branch in Details panel).
+
+**Decisions:** Bound by ADR-001/002/004. "In Library" chip rendered as `neutral` variant (not red/error) per the mockup. Upstream Details' full feature surface (episodes, seasons, similar, chapters, subtitle picker, delete, theme music) is NOT duplicated — those remain on upstream Details when `uiTheme === 'original'`. The Plex variant focuses on the readability win of the redesign.
+
+**Verified:** `npm run lint` clean; `npm run build:tizen` and `npm run build:tizen:legacy` both clean. End-user verification on Q90R deferred.
+
+**Next:** TKT-05 — LibraryPlex grid.

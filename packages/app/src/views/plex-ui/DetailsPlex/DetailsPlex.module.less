@@ -1,0 +1,235 @@
+@import '../../../styles/plex-ui/tokens.less';
+
+.view {
+	background: var(--bg);
+	color: var(--text);
+	min-height: 100vh;
+	position: relative;
+}
+
+.content {
+	margin-left: 88px; // collapsed sidebar
+	position: relative;
+	min-height: 100vh;
+}
+
+.backdropWrap {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 520px;
+	overflow: hidden;
+}
+
+.backdrop {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: right center;
+}
+
+.scrim {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background:
+		linear-gradient(to right, rgba(14, 15, 20, 0.95) 0%, rgba(14, 15, 20, 0.7) 35%, rgba(14, 15, 20, 0.4) 100%),
+		linear-gradient(to bottom, rgba(14, 15, 20, 0.4) 0%, rgba(14, 15, 20, 0.9) 80%, var(--bg) 100%);
+}
+
+.body {
+	position: relative;
+	padding: @s-6 @s-12 @s-12 @s-12;
+	max-width: 1100px;
+	z-index: 1;
+}
+
+.breadcrumb {
+	margin-bottom: @s-4;
+	font-size: @text-13;
+	color: var(--text-mute);
+}
+
+.crumb {
+	display: inline-block;
+	margin-right: @s-2;
+}
+
+.crumbCurrent {
+	color: var(--text);
+}
+
+.sep {
+	display: inline-block;
+	color: var(--accent-2);
+	margin-right: @s-2;
+}
+
+.logo {
+	display: block;
+	max-width: 520px;
+	max-height: 160px;
+	height: auto;
+	margin-bottom: @s-4;
+}
+
+.title {
+	margin: 0 0 @s-4 0;
+	line-height: 0.95;
+	font-family: @font-display;
+	color: var(--text);
+	text-transform: uppercase;
+}
+
+.facts,
+.genres,
+.tech {
+	display: block;
+	margin-bottom: @s-3;
+}
+
+.facts > *,
+.genres > *,
+.tech > * {
+	margin-right: @s-2;
+	margin-bottom: @s-2;
+	display: inline-block;
+}
+
+.tagline {
+	margin: @s-2 0 @s-3 0;
+	font-style: italic;
+	color: var(--accent-2);
+	font-size: @text-16;
+}
+
+.plot {
+	margin: 0 0 @s-4 0;
+	max-width: 640px;
+	color: var(--text-dim);
+	font-size: @text-16;
+	line-height: 1.45;
+}
+
+.actions {
+	display: block;
+	margin: @s-4 0 @s-6 0;
+}
+
+.actions > * {
+	margin-right: @s-3;
+	vertical-align: middle;
+}
+
+.primaryCta {
+	display: inline-flex;
+	align-items: center;
+	height: 56px;
+	padding: 0 @s-6;
+	background: #FFFFFF;
+	color: #0E0F14;
+	border: 0;
+	border-radius: 28px;
+	outline: none;
+	cursor: pointer;
+	transition: transform 180ms ease, box-shadow 180ms ease;
+
+	&:focus {
+		transform: scale(1.04);
+		box-shadow: 0 0 24px rgba(255, 255, 255, 0.45);
+	}
+}
+
+.ctaIcon {
+	width: 22px;
+	height: 22px;
+	margin-right: @s-3;
+}
+
+.ctaIcon svg {
+	width: 100%;
+	height: 100%;
+	fill: currentColor;
+}
+
+.ctaText {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.ctaLabel {
+	font-size: @text-16;
+	font-weight: 700;
+}
+
+.ctaSub {
+	font-size: @text-11;
+	color: rgba(14, 15, 20, 0.6);
+	letter-spacing: @text-11-tracking;
+	text-transform: uppercase;
+}
+
+.circle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 60px;
+	height: 60px;
+	background: var(--surface-2);
+	color: var(--text);
+	border: 0;
+	border-radius: 50%;
+	outline: none;
+	cursor: pointer;
+	transition: transform 180ms ease, background-color 180ms ease;
+
+	&:focus {
+		background: var(--accent);
+		color: #FFFFFF;
+		transform: scale(1.04);
+		box-shadow: 0 0 18px rgba(124, 92, 252, 0.4);
+	}
+}
+
+.circleIcon {
+	width: 24px;
+	height: 24px;
+	fill: currentColor;
+}
+
+.castSection {
+	margin-top: @s-6;
+}
+
+.castHeader {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: @s-2;
+}
+
+.castTitle {
+	margin: 0;
+	font-size: @text-24;
+	font-weight: 700;
+	color: var(--text);
+}
+
+.loadingDot {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--accent);
+	margin: 40vh auto;
+	opacity: 0.6;
+	transition: opacity 600ms ease;
+}
