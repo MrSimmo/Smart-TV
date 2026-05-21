@@ -275,6 +275,10 @@ const getClockDisplayOptions = () => [
 	{ value: '24-hour', label: $L('24-Hour') }
 ];
 
+// v0.1.1 bug #14: the Navbar Position row was removed, leaving this helper
+// unused. Kept in place (pruning is out of scope) so future reintroduction
+// or upstream rebases don't lose the option list.
+// eslint-disable-next-line no-unused-vars
 const getNavPositionOptions = () => [
 	{ value: 'top', label: $L('Top Bar') },
 	{ value: 'left', label: $L('Left Sidebar') }
