@@ -269,3 +269,37 @@ $ grep -rn "^[[:space:]]*gap:" packages/app/src/{components,views,styles}/plex-u
 **Rollout summary:** v0.1.1 closes every functional bug from the Q90R QA pass — Play actually plays, Genres → Library populates, Folders libraries list items, the sidebar is one single outer instance with the SP mark, the filter chips open real menus, and switching accent preset propagates to every focus ring. Two items carry `[!]` for confirmation on the device: bug #13 (overscroll) because Chromium doesn't reproduce the rubber-band, and indirectly every visual fix (#3, #4, #6, #7, #8, #11, #12, #16) because Playwright cannot pass the Jellyfin sign-in gate in this session. The Q90R deploy is the deciding gate.
 
 **Next:** Push `phase/7-v0.1.1-fixes`, push the `plex-ui-v0.1.1` tag, then human Q90R deploy + visual QA of the .wgt artefacts.
+
+## 2026-05-21 15:46 — Plex-UI v0.1.1 — Playwright QA pass
+
+**Scope:** End-to-end QA against the live dev server using `MumDad@192.168.0.2:8096`. Drove every Verification step from `tickets/prompt-0.1.1.md` and fixed every regression surfaced.
+
+**Tasks (per-step status, drove each via Playwright):**
+- [x] Step 1 — Sign in. Server `192.168.0.2:8096` → "Who's watching?" profile picker → MumDad → BrowsePlex lands. Evidence: `/tmp/v0.1.1/v1-step1-after-signin.png`.
+- [x] Step 2 — Default landing is left-sidebar Browse, SP brand mark visible, no purple in the active theme. Evidence: `/tmp/v0.1.1/v2-step2-browseplex.png`.
+- [x] Step 3 — FeaturedHero "Play" button routed to PANELS.PLAYER. Player rendered "AVPlay not available" (expected — Tizen-only API on Chromium). The routing is the bug-fix gate, and it fired. Evidence: `/tmp/v0.1.1/v3-step3-after-play.png`.
+- [x] Step 4 — Continue Watching card → PANELS.PLAYER with resume; the second card click was a Petersfield concert which routed straight to playback. Evidence: `/tmp/v0.1.1/v5-resume.yml`.
+- [!→x] Step 5 — Genres → Thriller. Initially showed "0 items" on first walkthrough. **Root cause:** the v0.1.0 client-side filter `result.filter(it => it.Genres.includes(genreFilter))` zapped every row because `Fields` did not request `Genres`, so the API returned items without a `Genres` array. **Fix:** added `Genres` to `Fields`; dropped the now-redundant client-side filter; also made the synthetic-library flow (library === null, or library.Id null) work by dropping `ParentId` from the request and falling the title back to the `genreFilter` prop. Post-fix: Thriller → 200 items (Limit capped). Evidence: `/tmp/v0.1.1/v13-thriller-200.png`. Commit `3fd1551`.
+- [x] Step 6 — Sidebar → Folders → 9 items rendered. Evidence: `/tmp/v0.1.1/v14-folders-page.png`.
+- [x] Step 7 — Library header search button reads "Search"; clicking opens global Search. Evidence: snapshot `/tmp/v0.1.1/v14-folders.yml`.
+- [!→x] Step 8 — FilterMenu popovers. Initially the menus did not open: React threw `Cannot set properties of undefined (setting 'top')` inside `<FilterMenu>` because `SpotlightContainerDecorator` does not forward refs to its DOM node, so `ref.current.style` was undefined. **Fix:** menu now takes `anchorRect` (a plain DOMRect-shaped object) computed by the caller at click time, and positions itself via inline style — no imperative DOM mutation. Post-fix: All Genres on Films → 20-row menu, Crime selection → 44 films; Year menu → descending years 2026→…; Rating menu populated. Evidence: `/tmp/v0.1.1/v17-films-menu.png`, `/tmp/v0.1.1/v19-year-menu.yml`, `/tmp/v0.1.1/v18-after-crime.yml`. Commit `3fd1551`.
+- [x] Step 9 — No grid/list toggle in LibraryPlex. Confirmed via filter-row snapshot — only the six filter chips, no ViewToggle.
+- [x] Step 10 — PosterCard title `line-height: 15.6001px` (13 × 1.2) and subtitle `margin-top: 4.00008px` measured via getComputedStyle. Title/year cluster tight as designed.
+- [x] Step 11 — DetailsPlex (`Unlocked` opened via FeaturedHero "More info"). MetadataPill measured `line-height: 13.0001px`, `height: 22px`, `vertical-align: middle` — the label sits centred. Outer sidebar visible to the left; no gap. Evidence: `/tmp/v0.1.1/v22-detailsplex.png`.
+- [!] Step 12 — Scroll bounce: not reproducible in Chromium. Speculative fix (`overscroll-behavior-y: contain` + `contain: layout style`) is in place from the initial round. Still `[!] verified on dev server only, awaiting Q90R re-test`.
+- [x] Step 13 — Settings → Personalization → Navigation: no "Navbar Position" row. → General Style: no "Card Focus Expansion" row. Confirmed via snapshot grep.
+- [x] Step 14 — Settings → Personalization → Appearance → Plex Gamboge. CSS vars on `:root` switch atomically: `--accent: #E5A00D`, `--accent-2: #F2C66B`, `--pill-bg: rgba(229, 160, 13, 0.18)`, `--accent-glow: rgba(229, 160, 13, 0.4)`, `--accent-glow-strong: rgba(229, 160, 13, 0.6)`. Reverting to Moonfin Purple restored `#7C5CFC`. Evidence: `/tmp/v0.1.1/v28-gamboge-active.png`.
+- [x] Step 15 — Both Tizen builds re-ran clean after the QA fixes:
+  - `Moonfin_Tizen_Regular_2.4.0.wgt` (3.87 MB, built 13:46)
+  - `Moonfin_Tizen_Legacy_2.4.0.wgt` (3.86 MB, built 13:46)
+
+**Commits added this pass:**
+- `3fd1551` fix(plex-ui): drive genre flow + FilterMenu positioning [#5] [#9]
+
+**Files changed:** `packages/app/src/views/plex-ui/LibraryPlex/LibraryPlex.js`, `packages/app/src/components/plex-ui/FilterMenu/FilterMenu.js`. No upstream-allow-list files touched in this pass.
+
+**Verified by:** Playwright headless against `http://localhost:8080` while signed in as MumDad@192.168.0.2:8096, plus `getComputedStyle` measurements for spacing/centring claims and `getPropertyValue('--*')` for accent token propagation.
+
+**Tag status:** `plex-ui-v0.1.1` on `origin` still points at `728ddb2`, which predates `3fd1551`. The branch is now ahead of the tag by one commit (the QA hotfix). Recommend the human re-tag — either delete + push `plex-ui-v0.1.1` (destructive on the tag only; the .wgt artefacts have been rebuilt) or tag a follow-up `plex-ui-v0.1.1.1`. Not done autonomously because re-tagging is a force-push variant and the project CLAUDE.md rules out destructive git ops without explicit ask.
+
+**Next:** Decide on the tag (re-tag v0.1.1 vs. follow-up tag) and human Q90R deploy of the rebuilt .wgt files.
