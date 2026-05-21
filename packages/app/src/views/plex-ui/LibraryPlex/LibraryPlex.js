@@ -34,6 +34,10 @@ const itemTypeForLibrary = (lib) => {
 		case 'boxsets': return 'BoxSet';
 		case 'music': return 'MusicAlbum,MusicArtist';
 		case 'homevideos': return 'Video,Photo,PhotoAlbum';
+		// Folders collections are heterogenous (movies + shows + videos mixed).
+		// Returning '' makes the helper below omit IncludeItemTypes entirely so
+		// the server returns whatever the folder contains.
+		case 'folders': return '';
 		default: return 'Movie,Series';
 	}
 };
@@ -71,9 +75,10 @@ const LibraryPlex = ({
 		}
 		let cancelled = false;
 		setLoading(true);
+		const includeItemTypes = itemTypeForLibrary(library);
 		api.getItems({
 			ParentId: library.Id,
-			IncludeItemTypes: itemTypeForLibrary(library),
+			IncludeItemTypes: includeItemTypes || undefined,
 			Genres: genreFilter || undefined,
 			Recursive: true,
 			Fields: 'UserData,MediaSources,ProductionYear,Width',
